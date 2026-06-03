@@ -91,6 +91,15 @@ def test_commit_appends_entry_attributed_to_the_worker():
     assert entry.model == "openai/gpt-oss-120b"
 
 
+def test_record_refuses_the_ai_as_author():
+    """Invariant 5 at the service layer: the AI can never be the author of record."""
+    with pytest.raises(ValueError):
+        decision_log.record(_proposal(), Disposition.COMMIT, author="openai/gpt-oss-120b", final_text="x")
+    with pytest.raises(ValueError):
+        decision_log.record(_proposal(), Disposition.COMMIT, author="   ", final_text="x")
+    assert _count() == 0  # neither attempt wrote anything
+
+
 def test_discard_is_logged_but_keeps_no_committed_text():
     entry = decision_log.record(_proposal(), Disposition.DISCARD, author="Sam Ellison (keyworker)")
     assert entry.disposition == "discard"

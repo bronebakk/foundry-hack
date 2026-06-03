@@ -12,8 +12,23 @@ Design guarantees (load-bearing for Invariant 1 / VAL-PROPOSE-001 / VAL-GOV-003)
 """
 from __future__ import annotations
 
+from app import config
 from app.db import get_conn
 from app.models import Proposal, Disposition, DecisionLogEntry
+
+
+def _require_human_author(author: str) -> str:
+    """Invariant 5 enforced at the service layer: the author of record must be a human,
+    never the AI. The caller supplies *which* human; the service guarantees it isn't a
+    model id or empty. (Callers should pass a server-side identity, not a client field.)"""
+    cleaned = (author or "").strip()
+    if not cleaned:
+        raise ValueError("author is required — the human worker of record")
+    if cleaned in config.ALLOWED_MODELS:
+        raise ValueError(
+            f"author must be the human worker, never the AI model ({cleaned}) — Invariant 5"
+        )
+    return cleaned
 
 
 def record(
@@ -24,10 +39,11 @@ def record(
 ) -> DecisionLogEntry:
     """Append one decision-log entry: the AI proposal + the human's disposition of it.
 
-    ``author`` is always the human worker of record — never the AI (Invariant 5).
-    ``final_text`` is the human-edited committed text for COMMIT/SEND/ESCALATE; for
-    DISCARD it is left None (nothing was kept).
+    ``author`` is always the human worker of record — never the AI (Invariant 5), enforced
+    by ``_require_human_author``. ``final_text`` is the human-edited committed text for
+    COMMIT/SEND/ESCALATE; for DISCARD it is left None (nothing was kept).
     """
+    author = _require_human_author(author)
     with get_conn() as conn:
         cur = conn.execute(
             """

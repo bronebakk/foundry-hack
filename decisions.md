@@ -27,9 +27,19 @@ Inference is served via **OpenRouter** as a deliberate **cost stand-in** for the
 
 The briefing makes the **immutable decision log** the central procurement-clearing proof and "the demoable spine" (propose → log → human-approve), but the original 13-assertion contract had no assertion for it. Added **VAL-GOV-003**: AI suggestions that inform a human action are recorded in an append-only, reproducible log with attribution. Nearly free under the D-001 stack (append-only SQLite table + a viewer). Contract now 14 assertions.
 
+### D-004 — Authorship enforced at the service layer; streams must supply server-side worker identity
+**Date**: 2026-06-03 · **By**: M2 build + validator finding · **Status**: Active · **Touches**: Invariant 5, all streams (M3/M4/M5)
+
+The M2 validator found that `decision_log.record(author=...)` originally stored whatever author string it was handed — worker-authorship was caller convention, not a service guarantee. Hardened before freezing: `decision_log.record` now rejects an empty author and rejects any author that is a model id in `ALLOWED_MODELS` (the AI can never be the author of record). The service guarantees *not-the-AI*; it cannot know *which* human — so:
+
+**Standing rule for M3/M4/M5:** when wiring a disposition endpoint, set `author` server-side from `config.DEMO_WORKER` (or a real session identity in production). **Never** take the author from a client-supplied form field — hidden fields can be spoofed. The shared `_proposal.html` partial deliberately carries no author field; inject it in the router.
+
 ---
 
 ## Discovered facts
+
+### F-002 — M2 (propose→log→dispose spine) gate PASSED-WITH-NOTES
+**Date**: 2026-06-03 · Fresh-context validator, adversarial pass. Spine sound: constructing a Proposal writes nothing (count stays 0); the inference layer has no persistence path (AST-verified — no `sqlite3`/`app.db`/`decision_log` import, no write-SQL); `record()` is the sole INSERT site in `app/`; append-only holds at both service (no mutation API) and DB (triggers reject UPDATE/DELETE) layers; original proposal preserved alongside human-edited final text. No live path commits or sends without a human action. The one note (author trusted from caller) was resolved in-milestone → see D-004. 15/15 tests pass.
 
 ### F-001 — M1 (Foundation) gate PASSED
 **Date**: 2026-06-03 · Fresh-context validator, no blocking issues. All 6 M1 deliverables + 3 GOV groundwork checks PASS. The two load-bearing guarantees were verified by live execution, not just code reading: (1) `decision_log` UPDATE/DELETE actually aborted by DB triggers; (2) `InferenceProvider` actually refused `openai/gpt-4o` before any network call. 7/7 tests pass. Env: Python 3.13.7, deps in `.venv`.
