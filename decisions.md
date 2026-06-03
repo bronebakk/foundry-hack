@@ -85,6 +85,13 @@ Integrating the three streams surfaced one cross-stream regression that no singl
 
 Integration findings handled in-milestone (no deferrals): import-time `init_db()` regression (D-007); hero personas promoted live (D-005); the DENY block de-hardcoded to be data-driven per persona; `decisions.md` F-numbering reconciled. M3/M4/M5 stream surfaces spot-checked green post-merge.
 
+### F-006 — M7 (Demo lock) gate PASSED — full-contract regression
+**Date**: 2026-06-03 · Final fresh-context validator, adversarial pass, on `main` (post UX redesign + security hardening) with **live open-weight inference** (`openai/gpt-oss-120b`). **All 13 `VAL-*` assertions across 6 areas PASS**; the three-stakeholder narrative ran clean end to end. Full evidence pack: [`docs/demo-evidence.md`](docs/demo-evidence.md). Highlights: context brief synthesised live with every claim source-linked (CTX-001/002); commit stores the worker's edited text, author server-side (DRAFT-002); count-delta proves generation writes nothing, only disposition does (PROPOSE-001); no machine "no" (DENY-001); risk surfaced not acted on, human-owned inbox (ESCALATE-001/002); only open-weight model ids in path, append-only proven by triggers + 405s, **forged-proposal and spoofed-author both rejected** (GOV-002/003). **90/90 tests pass.**
+
+One demo-hygiene defect the gate surfaced was **fixed at lock** (test-only, no app/invariant change): `test_m1_foundation.py` lacked DB isolation, so running the suite seeded a `test-worker` row into the real `foundry.db` (which would appear in the demo's governance log). Added the temp-DB fixture used by the other modules; a full suite run now leaves 0 real-DB entries. Non-blocking note carried forward: `integrity.py` uses a per-process signing key unless `PROPOSAL_SIGNING_KEY` is set (fine single-worker; documented in `docs/security-checklist.md`).
+
+**Demo is locked.** Live demo: `http://34.51.171.249:8090` (auth-gated, security headers, live gpt-oss-120b, clean seeded log). Per M7 discipline: no further building — anything new is a known issue, not a last-minute change.
+
 ---
 
 ## Known / deferred issues

@@ -6,12 +6,23 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
+from app import db as dbmod
 from app.main import app
 from app.db import init_db, get_conn
 from app.services import data
 from app.services.inference import provider, ClosedModelRefused
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def temp_db(tmp_path, monkeypatch):
+    """Isolate the DB per test so the suite never writes to the real foundry.db (matches the
+    other test modules). Without this, the append-only test below seeds a `test-worker` row into
+    the production log — which would then surface in the demo's governance view."""
+    monkeypatch.setattr(dbmod, "DB_PATH", tmp_path / "test.db")
+    dbmod.init_db()
+    yield
 
 
 def test_home_and_shell_render():
