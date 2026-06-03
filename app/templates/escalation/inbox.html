@@ -1,61 +1,50 @@
 {% extends "base.html" %}
 {% block title %}Safeguarding inbox — Keyworker Workbench{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="/static/escalation.css" />
+<p class="eyebrow">A human-owned queue</p>
+<h1>Safeguarding inbox</h1>
+<p class="lead">Every item here arrived <strong>because a worker chose to send it</strong> — never
+  automatically. The system resolves nothing here; a designated safeguarding lead owns and closes
+  these off-system.</p>
 
-<p><a href="/escalation/" class="secondary">← Safeguarding overview</a></p>
-
-<hgroup>
-  <h1>Safeguarding inbox</h1>
-  <p>A <strong>human-owned</strong> queue. Every item here arrived <strong>because a worker
-  chose to send it</strong> — never automatically. The system does not resolve anything in this
-  queue; a designated safeguarding lead owns and closes these off-system.</p>
-</hgroup>
-
-<div class="esc-inbox-owner" role="note">
-  <small>Owned by: <strong>Safeguarding Lead (human)</strong> · The machine marks nothing
-  “resolved”.</small>
+<div class="inbox-owner">
+  <span aria-hidden="true">👤</span> Owned by <strong>Safeguarding Lead (human)</strong> ·
+  the machine marks nothing "resolved".
 </div>
 
 {% if items %}
-<div class="esc-queue">
-  {% for it in items %}
-  {% set e = it.entry %}
-  <article class="esc-queue-item">
-    <header>
-      {% if it.is_safeguarding %}
-        <span class="tag-risk">safeguarding escalation</span>
-      {% else %}
-        <span class="tag-synthetic">decision needed (human)</span>
-      {% endif %}
-      <strong>{{ it.persona_name }}</strong>
-      <small>· entry #{{ e.id }} · {{ e.created_at }}</small>
-    </header>
-
-    <p class="esc-arrived"><small>↳ Arrived because <strong>{{ e.author }}</strong> sent it.
-      Not auto-generated.</small></p>
-
-    {% if e.final_text %}
-    <blockquote>{{ e.final_text }}</blockquote>
+{% for it in items %}
+{% set e = it.entry %}
+<article class="queue-item {{ 'escalate' if it.is_safeguarding else '' }}">
+  <header>
+    {% if it.is_safeguarding %}
+      <span class="tag tag-risk tag-dot">safeguarding escalation</span>
+    {% else %}
+      <span class="tag tag-synthetic tag-dot">decision needed (human)</span>
     {% endif %}
+    <strong>{{ it.persona_name }}</strong>
+    <span class="muted" style="font-size:.84rem;">· entry #{{ e.id }} · {{ e.created_at }}</span>
+  </header>
 
-    {% if e.proposal_text %}
-    <details>
-      <summary>Context the worker had</summary>
-      <p><small>{{ e.proposal_text }}</small></p>
-    </details>
-    {% endif %}
+  <p class="arrived">↳ Arrived because <strong>{{ e.author }}</strong> sent it. Not auto-generated.</p>
 
-    <footer>
-      <small><span class="esc-status">Awaiting human review</span> ·
-      a person decides and resolves this — the system will not.</small>
-    </footer>
-  </article>
-  {% endfor %}
-</div>
+  {% if e.final_text %}<blockquote>{{ e.final_text }}</blockquote>{% endif %}
+
+  {% if e.proposal_text %}
+  <details>
+    <summary class="muted" style="cursor:pointer; font-size:.86rem;">Context the worker had</summary>
+    <p class="muted" style="margin-top:.4rem; font-size:.88rem;">{{ e.proposal_text }}</p>
+  </details>
+  {% endif %}
+
+  <p style="margin:.7rem 0 0;"><span class="q-status">Awaiting human review</span>
+    <span class="muted" style="font-size:.86rem;">· a person decides and resolves this — the system will not.</span></p>
+</article>
+{% endfor %}
 {% else %}
-<p>The inbox is empty. Nothing reaches this queue unless a worker explicitly sends it from a
-young person's safeguarding view.</p>
+<div class="card"><p class="mb0 muted">The inbox is empty. Nothing reaches this queue unless a worker
+  explicitly sends it from a young person's safeguarding view.</p></div>
 {% endif %}
 
+<a class="back-link" href="/escalation/">← Safeguarding overview</a>
 {% endblock %}

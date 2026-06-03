@@ -1,9 +1,9 @@
 {#
   Returned by POST /drafting/{id}/generate into #draft-slot. Frames the generated text as
-  an uncommitted, editable proposal via the shared _proposal.html partial. Rendering this
-  has written NOTHING — only the disposition POST inside the proposal form records anything.
+  an uncommitted, editable proposal via the shared _proposal.html frame. Rendering this has
+  written NOTHING — only the disposition POST inside the proposal form records anything.
 #}
 {% if inference_note %}
-<p class="draft-inference-note" role="note"><small>⚠ {{ inference_note }}</small></p>
+<p class="muted" role="note" style="margin-bottom:.6rem; font-size:.85rem;">⚠ {{ inference_note }}</p>
 {% endif %}
 {% include "_proposal.html" with context %}

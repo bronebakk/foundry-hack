@@ -138,7 +138,7 @@ def test_route_200_with_synthetic_marker_and_source_records(monkeypatch):
     assert r.status_code == 200
     assert "synthetic" in r.text                    # synthetic marker (VAL-GOV-001)
     assert "Attendance down to 41%" in r.text       # a verbatim source record passage
-    assert "Source records (3)" in r.text
+    assert "Source records" in r.text and ">(3)<" in r.text
 
 
 # --- Graceful degradation: inference unavailable never 500s ---
@@ -175,7 +175,8 @@ def test_brief_is_framed_as_a_proposal_not_a_record(monkeypatch):
         _FakeProvider('[{"statement": "x.", "source_record_ids": ["leah-r1"]}]'),
     )
     r = client.get(f"/context/{PERSONA_ID}")
-    assert "AI proposal" in r.text                   # visibly an AI draft, not settled fact
+    assert 'class="proposal"' in r.text              # rendered inside the uncommitted-draft frame
+    assert "⬩ Brief" in r.text                       # the draft pill, not a settled record
     assert "not a record of truth" in r.text
 
 

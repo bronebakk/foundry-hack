@@ -1,27 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Caseload — Keyworker Workbench{% endblock %}
 {% block content %}
-<hgroup>
-  <h1>Your caseload</h1>
-  <p>Three young people (synthetic). Open one to build pre-meeting context, draft notes, or review safeguarding signals — all as editable proposals you author and commit.</p>
-</hgroup>
+<p class="eyebrow">Your workbench</p>
+<h1>Your caseload</h1>
+<p class="lead">{{ personas|length }} young people. Open one to build pre-meeting context, draft notes, or
+  review safeguarding signals — all as editable proposals you author and commit.</p>
 
-<div class="grid">
+<div class="grid cols-3" style="margin-top:1.6rem;">
   {% for p in personas %}
-  <article>
-    <header>
-      <strong>{{ p.name }}</strong>, {{ p.age }}
-      {% if p.synthetic %}<span class="tag-synthetic">synthetic</span>{% endif %}
-    </header>
-    <p>{{ p.summary_line }}</p>
-    <footer>
-      <small>{{ p.record_count }} source record(s){% if p.has_risk_indicator %} · <span class="tag-risk">safeguarding signal present</span>{% endif %}</small>
-      <br />
-      <a href="/context/{{ p.id }}" role="button" class="secondary">Open</a>
-    </footer>
-  </article>
+  <a class="card card-hover card-link" href="/context/{{ p.id }}">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:.5rem;">
+      <h3 style="margin:0;">{{ p.name }}</h3>
+      <span class="muted" style="font-size:.9rem; font-variant-numeric:tabular-nums;">{{ p.age }}</span>
+    </div>
+    {% if p.synthetic %}<span class="tag tag-synthetic" style="align-self:flex-start; margin-top:.5rem;">synthetic</span>{% endif %}
+    <p style="margin:.9rem 0 0; font-size:.93rem;">{{ p.summary_line }}</p>
+    <div style="margin-top:auto; padding-top:1rem; display:flex; align-items:center; justify-content:space-between; gap:.5rem;">
+      <span class="subtle" style="font-size:.82rem;">{{ p.record_count }} source records</span>
+      {% if p.has_risk_indicator %}
+        <span class="tag tag-risk tag-dot">safeguarding signal</span>
+      {% else %}
+        <span class="source-link" style="pointer-events:none;">Open</span>
+      {% endif %}
+    </div>
+  </a>
   {% endfor %}
 </div>
-
-<p><small>This caseload is the demo's starting point. Functionality is being built milestone by milestone — see the project's <code>missions.md</code>.</small></p>
 {% endblock %}

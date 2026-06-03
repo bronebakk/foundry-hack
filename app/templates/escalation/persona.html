@@ -1,113 +1,117 @@
 {% extends "base.html" %}
 {% block title %}{{ persona.name }} — Safeguarding — Keyworker Workbench{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="/static/escalation.css" />
-
-<p><a href="/escalation/" class="secondary">← Safeguarding overview</a></p>
-
-<hgroup>
-  <h1>
-    {{ persona.name }}, {{ persona.age }}
-    {% if persona.synthetic %}<span class="tag-synthetic">synthetic</span>{% endif %}
-  </h1>
-  <p>{{ persona.summary_line }}</p>
-</hgroup>
-
-{% if persona.demo_note %}<p><small><em>{{ persona.demo_note }}</em></small></p>{% endif %}
-
-<!-- The bright line, stated up front (Invariant 6 / VAL-ESCALATE-001). -->
-<div class="esc-callout" role="note">
-  <strong>No automatic action has been or will be taken.</strong> The signals below are surfaced
-  for your judgement. The system has not notified anyone, made any referral, or decided anything.
-  <strong>You decide what happens next.</strong>
-</div>
+{% include "_arc.html" %}
 
 {% if risk_items %}
-<h2>Surfaced signal{{ 's' if risk_items|length > 1 else '' }}</h2>
+  <p class="eyebrow">Surfaced for your judgement · human-owned</p>
+  <h1>Safeguarding — {{ persona.name }}</h1>
+{% elif aspiration_record %}
+  <p class="eyebrow">No computer says no</p>
+  <h1>Options — {{ persona.name }}</h1>
+{% else %}
+  <p class="eyebrow">Human-owned</p>
+  <h1>Safeguarding — {{ persona.name }}</h1>
+{% endif %}
+<p class="lead">{{ persona.summary_line }}</p>
+{% if persona.demo_note %}
+<p class="muted" style="font-style:italic; font-size:.9rem; max-width:62ch;">🧪 {{ persona.demo_note }}</p>
+{% endif %}
 
+{% if risk_items %}
+{# The bright line, stated up front (Invariant 6 / VAL-ESCALATE-001). #}
+<div class="callout" role="note">
+  <span class="ic" aria-hidden="true">🛡️</span>
+  <div><strong>No automatic action has been or will be taken.</strong> The signal below is surfaced
+  for your judgement. The system has not notified anyone, made any referral, or decided anything.
+  <strong>You decide what happens next.</strong></div>
+</div>
+
+<h2>Surfaced signal{{ 's' if risk_items|length > 1 else '' }}</h2>
 {% for item in risk_items %}
 {% set record = item.record %}
-<section class="esc-risk">
-  <header class="esc-risk-head">
-    <span class="tag-risk">safeguarding signal</span>
-    <strong>{{ record.risk_category }}</strong>
-  </header>
+<div class="risk">
+  <div class="risk-head">
+    <span class="tag tag-risk tag-dot">safeguarding signal</span>
+    <span class="title">{{ record.risk_category }}</span>
+  </div>
+  <p class="eyebrow" style="margin-bottom:.2rem;">Why this was flagged</p>
+  <p style="margin:0 0 .2rem;">{{ record.risk_rationale }}</p>
 
-  <div class="esc-why">
-    <h4>Why this was flagged</h4>
-    <p>{{ record.risk_rationale }}</p>
+  {# Explainability (Invariant 7): the signal traces to the exact source record. #}
+  <div class="record" style="margin-top:1rem;">
+    <div class="rec-head"><strong>Source — record <code>{{ record.id }}</code></strong>
+      <span class="muted">— this is what triggered the signal</span></div>
+    <p class="muted" style="margin:.35rem 0 0; font-size:.84rem;">{{ record.source }} · {{ record.date }} · logged by {{ record.author }}</p>
+    <blockquote>{{ record.text }}</blockquote>
+    <p class="subtle mb0" style="margin-top:.6rem; font-size:.82rem;">This indicator is present in the synthetic
+      record. The system did not judge it — it is shown to you, with its source, so you can.</p>
   </div>
 
-  <!-- Explainability (Invariant 7): the signal traces to the exact source record. -->
-  <details class="esc-source" open>
-    <summary>Source — record <code>{{ record.id }}</code> (this is what triggered the signal)</summary>
-    <p class="esc-source-meta">
-      <small>{{ record.source }} · {{ record.date }} · logged by {{ record.author }}</small>
-    </p>
-    <blockquote>{{ record.text }}</blockquote>
-    <p><small>This indicator is present in the synthetic record. The system did not judge it —
-    it is shown to you, with its source, so you can.</small></p>
-  </details>
-
-  <h4>Escalate — your decision</h4>
+  <h4 style="margin:1.3rem 0 .6rem;">Escalate — your decision</h4>
   {% if not ai_available %}
-  <p><small><em>Inference not configured — the draft below is generated from the record itself,
-  not a model. It is still just a draft for you to edit.</em></small></p>
+  <p class="muted" style="font-size:.85rem;"><em>Inference not configured — the draft below is generated from the
+    record itself, not a model. It is still just a draft for you to edit.</em></p>
   {% endif %}
 
-  {# Reuse the shared, frozen proposal partial: an uncommitted, editable draft with
-     human-owned actions. Nothing is recorded until the worker clicks. #}
   {% set proposal = item.proposal %}
   {% set action_url = "/escalation/" ~ persona.id ~ "/escalate" %}
   {% set proposal_type_label = "Safeguarding escalation note" %}
+  {% set foot = "The AI drafts; you decide. Nothing is sent until you escalate. Escalation is your decision and lands in a human-owned queue." %}
   {% set actions = [
-       {"value": "escalate", "label": "Escalate to safeguarding lead", "class": "contrast"},
-       {"value": "discard", "label": "Not now — record my review", "class": "secondary outline"}
+       {"value": "escalate", "label": "Escalate to safeguarding lead"},
+       {"value": "discard", "label": "Not now — record my review"}
      ] %}
   {% include "_proposal.html" %}
-</section>
+</div>
 {% endfor %}
-{% else %}
-<p>No safeguarding signal is currently surfaced for {{ persona.name }}.</p>
+{% elif not aspiration_record %}
+<div class="callout" role="note">
+  <span class="ic" aria-hidden="true">⬩</span>
+  <div><strong>No safeguarding signal is present</strong> in {{ persona.name.split()[0] }}'s synthetic records.
+  There is nothing to escalate — and the system would never escalate on its own.</div>
+</div>
 {% endif %}
 
-<!-- No "computer says no" (Invariant 2 / VAL-DENY-001). -->
+{# No "computer says no" (Invariant 2 / VAL-DENY-001). #}
 {% if aspiration_record %}
-<section class="esc-options">
-  <h2>Opportunities &amp; options</h2>
-  <p class="esc-source-meta"><small>{{ persona.name }} asked about this in their own words —
-    record <code>{{ aspiration_record.id }}</code> ({{ aspiration_record.date }}):</small></p>
-  <blockquote>{{ aspiration_record.text }}</blockquote>
+<section style="margin-top:1.4rem;">
+  {% if risk_items %}<h2>Opportunities &amp; options</h2>{% endif %}
+  <p class="muted">{{ persona.name }} asked about this in their own words —
+    record <code>{{ aspiration_record.id }}</code> ({{ aspiration_record.date }}):</p>
+  <blockquote class="option-q">{{ aspiration_record.text }}</blockquote>
 
-  <article class="esc-option">
-    <p class="esc-no-no"><strong>The system isn't telling {{ persona.name }} “no”.</strong>
-       It can't — and it won't. Where an option isn't open on its usual route, a person owns that
-       decision and delivers it with a reason and a real alternative — never a machine refusal.</p>
+  <div class="option">
+    <div class="no-no"><strong>The system isn't telling {{ persona.name }} "no".</strong>
+      It can't — and it won't. Where an option isn't open on its usual route, a person owns that
+      decision and delivers it with a reason and a real alternative — never a machine refusal.</div>
 
     {% if support_notes %}
-    <p><strong>Routes already noted on file</strong> for a keyworker to work through with
-       {{ persona.name }} — nothing here is closed off automatically:</p>
+    <p class="muted"><strong style="color:var(--ink);">Routes already noted on file</strong> for a keyworker to
+      work through with {{ persona.name }} — nothing here is closed off automatically:</p>
     {% for n in support_notes %}
-    <blockquote><small>{{ n.source }} · {{ n.date }}</small><br />{{ n.text }}</blockquote>
+    <div class="record"><div class="rec-head"><strong>{{ n.source }}</strong> <span class="muted">· {{ n.date }}</span></div>
+      <blockquote>{{ n.text }}</blockquote></div>
     {% endfor %}
     {% else %}
-    <p>A keyworker reviews the open routes and alternatives with {{ persona.name }} — see the full
-       <a href="/context/{{ persona.id }}">case records</a>. Nothing is closed off automatically.</p>
+    <p class="muted">A keyworker reviews the open routes and alternatives with {{ persona.name }} — see the full
+      <a href="/context/{{ persona.id }}">case records</a>. Nothing is closed off automatically.</p>
     {% endif %}
 
-    <form method="post" action="/escalation/{{ persona.id }}/refer">
+    <form method="post" action="/escalation/{{ persona.id }}/refer" style="margin-top:1rem;">
       <input type="hidden" name="context_text"
              value="{{ persona.name }} asked (own words) about an option that isn't open on its usual route. Routing the decision to a keyworker to review the alternatives on file and come back with a route and a reason." />
-      <label>
-        Hand this to a keyworker to decide and deliver (edit freely — your words):
-        <textarea name="final_text" rows="3">Please review {{ persona.name }}'s options and come back to them with a route they can take up and a real alternative — they specifically don't want to just be told “no”.</textarea>
+      <label>Hand this to a keyworker to decide and deliver <span class="hint">(edit freely — your words)</span>
+        <textarea name="final_text" rows="3">Please review {{ persona.name }}'s options and come back to them with a route they can take up and a real alternative — they specifically don't want to just be told "no".</textarea>
       </label>
-      <button type="submit" class="contrast">Send to a keyworker to decide</button>
+      <button type="submit" class="btn btn-contrast btn-lg">Send to a keyworker to decide</button>
     </form>
-    <small class="proposal-foot">This routes the <em>decision</em> to a human. The system never
-      refuses on its own authority, and never closes a door without a person and an alternative.</small>
-  </article>
+    <p class="proposal-foot mb0" style="margin-top:.9rem;"><span class="lock" aria-hidden="true">⬩</span>
+      This routes the decision to a human. The system never refuses on its own authority, and never
+      closes a door without a person and an alternative.</p>
+  </div>
 </section>
 {% endif %}
 
+<a class="back-link" href="/escalation/">← Safeguarding overview</a>
 {% endblock %}

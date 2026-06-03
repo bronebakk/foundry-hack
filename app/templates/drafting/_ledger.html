@@ -3,34 +3,34 @@
   action, generation has produced NOTHING here. Expects `committed` and `sent` lists of
   DecisionLogEntry (newest first), and `persona`.
 #}
-<div class="grid">
-  <article class="ledger">
-    <header><strong>Committed case notes</strong> <small>({{ committed|length }})</small></header>
+<div class="grid cols-2">
+  <article class="card">
+    <h3 style="margin-bottom:.6rem;">Committed case notes <span class="muted" style="font-weight:400;">({{ committed|length }})</span></h3>
     {% if committed %}
       {% for e in committed %}
-      <article class="ledger-entry">
-        <small class="ledger-attrib">✓ Committed by {{ e.author }} · {{ e.created_at }}</small>
+      <div class="committed-record">
+        <span class="attrib">✓ Committed by {{ e.author }} · {{ e.created_at }}</span>
         <p>{{ e.final_text }}</p>
-      </article>
+      </div>
       {% endfor %}
     {% else %}
-      <p><small>No committed notes yet. Drafting alone never writes here — only your explicit “Commit”.</small></p>
+      <p class="muted mb0">No committed notes yet. Drafting alone never writes here — only your explicit "Commit".</p>
     {% endif %}
   </article>
 
-  <article class="ledger">
-    <header><strong>Sent messages</strong> <small>({{ sent|length }})</small></header>
+  <article class="card">
+    <h3 style="margin-bottom:.6rem;">Sent messages <span class="muted" style="font-weight:400;">({{ sent|length }})</span></h3>
     {% if sent %}
       {% for e in sent %}
-      <article class="ledger-entry">
-        <small class="ledger-attrib">➤ Sent by {{ e.author }} · {{ e.created_at }}</small>
+      <div class="committed-record">
+        <span class="attrib">➤ Sent by {{ e.author }} · {{ e.created_at }}</span>
         <p>{{ e.final_text }}</p>
-      </article>
+      </div>
       {% endfor %}
     {% else %}
-      <p><small>Nothing sent. A follow-up stays a draft until you explicitly press “Send”.</small></p>
+      <p class="muted mb0">Nothing sent. A follow-up stays a draft until you explicitly press "Send".</p>
     {% endif %}
   </article>
 </div>
-<p><small>Every entry above is also in the immutable <a href="/governance/">decision log</a>,
-   alongside the original AI proposal it came from.</small></p>
+<p class="muted" style="margin-top:1rem; font-size:.9rem;">Every entry above is also in the immutable
+  <a href="/governance/">decision log</a>, alongside the original AI proposal it came from.</p>

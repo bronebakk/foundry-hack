@@ -1,0 +1,22 @@
+{# Person-arc stepper — carries ONE young person through the arc with visible progress.
+   Include on person-scoped surfaces with `persona` in context. Active step derived from path. #}
+{% set path = request.url.path %}
+{% set steps = [
+     ("context",  "Context",      "/context/"    ~ persona.id),
+     ("drafting", "Drafting",     "/drafting/"   ~ persona.id),
+     ("escalation","Safeguarding","/escalation/" ~ persona.id),
+     ("governance","Decision log","/governance/?persona_id=" ~ persona.id)
+   ] %}
+<nav class="arc" aria-label="This young person, through the flow">
+  <span class="arc-who">{{ persona.name }}, {{ persona.age }} <span class="tag tag-synthetic">synthetic</span></span>
+  <div class="arc-steps">
+    {% for key, label, href in steps %}
+    {% set is_active = path.startswith('/' ~ key) %}
+    {% if not loop.first %}<span class="chev" aria-hidden="true">›</span>{% endif %}
+    <a class="arc-step {{ 'active' if is_active else '' }}" href="{{ href }}"
+       {% if is_active %}aria-current="step"{% endif %}>
+      <span class="n">{{ loop.index }}</span><span class="lbl">{{ label }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</nav>

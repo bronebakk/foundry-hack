@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}Northgate Futures — Keyworker Workbench{% endblock %}</title>
-  <!-- Pico.css (classless) from CDN: low bandwidth, zero build step (decision D-001) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-  <!-- HTMX for in-place interactivity without a SPA bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js"></script>
   <link rel="stylesheet" href="/static/base.css" />
+  <!-- HTMX, self-hosted (no runtime CDN): in-place swaps without a SPA bundle -->
+  <script src="/static/vendor/htmx.min.js" defer></script>
 </head>
 <body>
   <!-- Persistent, unmissable synthetic-data marker (Invariant 3 / VAL-GOV-001) -->
@@ -22,11 +20,11 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="container">
-    <small>
-      Keyworker Force-Multiplier — hackathon build. The AI <strong>proposes</strong>; the worker <strong>disposes</strong>.
-      Open-weight inference (gpt-oss-120b), self-hostable. Worker of record: {{ worker }}.
-    </small>
+  <footer class="app-footer">
+    <div class="container">
+      The AI <strong>proposes</strong>; the worker <strong>disposes</strong>.
+      Open-weight inference (<code>gpt-oss-120b</code>), self-hostable. Worker of record: {{ worker }}.
+    </div>
   </footer>
 </body>
 </html>

@@ -1,88 +1,73 @@
 {% extends "base.html" %}
 {% block title %}Decision log — Keyworker Workbench{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="/static/governance.css" />
-
-<hgroup>
-  <h1>Decision log</h1>
-  <p>Every AI proposal a worker acted on — the <strong>AI's proposal</strong>, the
+<p class="eyebrow">The governance spine</p>
+<h1>Decision log</h1>
+<p class="lead">Every AI proposal a worker acted on — the <strong>AI's proposal</strong>, the
   <strong>human's disposition</strong>, and the <strong>worker of record</strong> — in an
   append-only log that cannot be silently altered.</p>
-</hgroup>
 
-<!-- Append-only is the whole point: state it, and notice there is no edit/delete control anywhere. -->
+{# Append-only is the whole point: state it, and notice there is no edit/delete control anywhere. #}
 <div class="gov-immutable" role="note">
-  🔒 <strong>Append-only.</strong> Entries can be added but never edited or deleted — enforced at
-  the database layer (UPDATE/DELETE are rejected by triggers) and the service layer (no mutation
-  API exists). This page is read-only by construction; there is no edit or delete control to find.
+  <span aria-hidden="true">🔒</span>
+  <div><strong>Append-only.</strong> Entries can be added but never edited or deleted — enforced at the
+  database layer (UPDATE/DELETE rejected by triggers) and the service layer (no mutation API exists).
+  Read-only by construction; there is no edit or delete control to find.</div>
 </div>
 
-<!-- Inference provenance (VAL-GOV-002): open-weight only, swap by config. -->
-<details class="gov-inference">
-  <summary>Inference provenance — open-weight only, self-hostable</summary>
-  <ul>
-    <li>Models in the path (allowlisted; anything else is refused before any network call):
-      {% for m in inference.allowed_models %}<code>{{ m }}</code>{% if not loop.last %}, {% endif %}{% endfor %}</li>
-    <li>Primary: <code>{{ inference.primary_model }}</code> — no closed/proprietary model can enter the path.</li>
-    <li>Single swap point to sovereign infra: base URL <code>{{ inference.base_url }}</code>
-      (set <code>OPENROUTER_BASE_URL</code> + key — no code change).</li>
-    <li>Live key configured: {{ "yes" if inference.configured else "no (offline; drafts degrade gracefully)" }}</li>
-  </ul>
-</details>
+{# Inference provenance (VAL-GOV-002): open-weight only, swap by config. #}
+<div class="gov-inference">
+  <strong>Inference provenance — open-weight only, self-hostable.</strong>
+  Primary <code>{{ inference.primary_model }}</code>{% for m in inference.allowed_models %}{% if m != inference.primary_model %} · fallback <code>{{ m }}</code>{% endif %}{% endfor %}.
+  No closed cloud model. Single swap point to sovereign infra: <code>{{ inference.base_url }}</code>
+  ({{ "live key configured" if inference.configured else "offline — drafts degrade gracefully" }}).
+</div>
 
 <nav class="gov-filter" aria-label="Filter the log by young person">
-  <small>Filter:</small>
-  <a href="/governance/" role="button" class="{{ '' if active_persona else 'contrast' }} outline">All</a>
+  <span class="lbl">Filter</span>
+  <a href="/governance/" class="chip {{ 'active' if not active_persona else '' }}">All</a>
   {% for p in personas %}
-  <a href="/governance/?persona_id={{ p.id }}" role="button"
-     class="{{ 'contrast' if active_persona == p.id else '' }} outline">{{ p.name }}</a>
+  <a href="/governance/?persona_id={{ p.id }}"
+     class="chip {{ 'active' if active_persona == p.id else '' }}">{{ p.name.split()[0] }}</a>
   {% endfor %}
 </nav>
 
-<p><small>{{ total }} entr{{ 'y' if total == 1 else 'ies' }}{% if active_persona %} for this young person{% endif %} · newest first.</small></p>
+<p class="muted" style="font-size:.85rem;">{{ total }} entr{{ 'y' if total == 1 else 'ies' }}{% if active_persona %} for this young person{% endif %} · newest first.</p>
 
 {% if rows %}
 <div class="gov-log">
   {% for r in rows %}
   {% set e = r.e %}
-  <article class="gov-entry gov-{{ e.disposition }}">
-    <header class="gov-entry-head">
+  <article class="gov-entry {{ e.disposition }}">
+    <div class="gov-head">
       <span class="gov-id">#{{ e.id }}</span>
-      <span class="gov-badge gov-badge-{{ e.disposition }}">{{ e.disposition }}</span>
-      <span class="gov-when"><small>{{ e.created_at }}</small></span>
-    </header>
-    <p class="gov-meta"><small>
-      {{ r.persona_name }} · surface: {{ e.surface }}{% if e.proposal_type %} · {{ e.proposal_type }}{% endif %}
-    </small></p>
-
-    {# AI proposal — exactly as generated, preserved verbatim. #}
-    {% if e.proposal_text %}
-    <div class="gov-proposal">
-      <span class="gov-label">⬩ AI proposed</span>
-      {% if e.model %}<small class="gov-model">open-weight: {{ e.model }}</small>{% endif %}
-      <blockquote>{{ e.proposal_text }}</blockquote>
+      <span class="badge badge-{{ e.disposition }}">{{ e.disposition }}</span>
+      <span class="gov-when">{{ e.created_at }}</span>
     </div>
-    {% endif %}
+    <p class="gov-meta">{{ r.persona_name }} · surface: {{ e.surface }}{% if e.proposal_type %} · {{ e.proposal_type }}{% endif %}</p>
 
-    {# Human disposition + attribution — the worker is always the author of record. #}
-    <div class="gov-disposition">
-      <span class="gov-arrow">→</span>
-      <strong>{{ e.author }}</strong> {{ r.disposition_label }}.
+    <div class="gov-flow">
+      <div class="gov-step ai">
+        <div class="who">⬩ AI proposed{% if e.model %} <span class="subtle">· open-weight: {{ e.model }}</span>{% endif %}</div>
+        <p>{{ e.proposal_text or "—" }}</p>
+      </div>
+      <div class="gov-connector" aria-hidden="true">↓</div>
+      <div class="gov-step human">
+        <div class="who"><span class="arrow">→</span> {{ e.author }} {{ r.disposition_label }}</div>
+        <p>{{ e.final_text or "(nothing kept)" }}</p>
+      </div>
     </div>
-    {% if e.final_text %}
-    <blockquote class="gov-final">{{ e.final_text }}</blockquote>
-    {% endif %}
   </article>
   {% endfor %}
 </div>
 {% else %}
-<article class="proposal">
-  <p>No decisions logged yet{% if active_persona %} for this young person{% endif %}. The log fills
-  as workers act on AI proposals — committing an edited note, sending a follow-up, escalating a
-  concern, or discarding a draft. Generating a proposal alone never writes here; only an explicit
-  human disposition does.</p>
-</article>
+<div class="card">
+  <p class="mb0 muted">No decisions logged yet{% if active_persona %} for this young person{% endif %}. The log
+  fills as workers act on AI proposals — committing an edited note, sending a follow-up, escalating a
+  concern, or discarding a draft. Generating a proposal alone never writes here; only an explicit human
+  disposition does.</p>
+</div>
 {% endif %}
 
-<p><a href="/" class="secondary">← Back to caseload</a></p>
+<a class="back-link" href="/">← Back to caseload</a>
 {% endblock %}

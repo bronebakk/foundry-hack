@@ -1,12 +1,23 @@
-<nav class="container">
-  <ul>
-    <li><strong><a href="/">Northgate Futures</a></strong> <small>· Keyworker Workbench</small></li>
-  </ul>
-  <ul>
-    <li><a href="/">Caseload</a></li>
-    <li><a href="/context/">Context</a></li>
-    <li><a href="/drafting/">Drafting</a></li>
-    <li><a href="/escalation/">Safeguarding</a></li>
-    <li><a href="/governance/">Decision log</a></li>
-  </ul>
-</nav>
+{# Sticky top bar — light Northgate identity + primary nav. Active state is derived from the
+   request path (no client state). The logomark is the only drawn asset in the system. #}
+{% set path = request.url.path %}
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="brand" href="/">
+      <svg class="mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="25" height="25" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/>
+        <path d="M9 20V11.5a5 5 0 0 1 10 0V20" fill="none" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/>
+        <path d="M14 20v-6" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/>
+      </svg>
+      <span class="name">Northgate Futures</span>
+      <span class="sub">Keyworker Workbench</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="/" class="{{ 'active' if path == '/' else '' }}">Caseload</a>
+      <a href="/context/" class="{{ 'active' if path.startswith('/context') else '' }}">Context</a>
+      <a href="/drafting/" class="{{ 'active' if path.startswith('/drafting') else '' }}">Drafting</a>
+      <a href="/escalation/" class="{{ 'active' if path.startswith('/escalation') else '' }}">Safeguarding</a>
+      <a href="/governance/" class="{{ 'active' if path.startswith('/governance') else '' }}">Decision log</a>
+    </nav>
+  </div>
+</header>
