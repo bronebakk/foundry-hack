@@ -34,6 +34,19 @@ The M2 validator found that `decision_log.record(author=...)` originally stored 
 
 **Standing rule for M3/M4/M5:** when wiring a disposition endpoint, set `author` server-side from `config.DEMO_WORKER` (or a real session identity in production). **Never** take the author from a client-supplied form field — hidden fields can be spoofed. The shared `_proposal.html` partial deliberately carries no author field; inject it in the router.
 
+### D-005 — Synthetic data: hybrid generator + an automated synthetic-data gate; new hero personas staged for M6
+**Date**: 2026-06-03 · **By**: Jakob (chose hybrid / separate-dirs / opt-in LLM) · **Status**: Active · **Touches**: Invariant 3, Invariant 7, VAL-GOV-001, demo data for all surfaces
+
+We have no real users/data, so demo + test data is synthetic by construction. Approach (built on branch `m3-context`, in new files only — no frozen files touched):
+- **Gate** `scripts/validate_personas.py` — every persona must pass: `synthetic: true` required (Invariant 3), risk flags must carry `risk_category` + `risk_rationale` (Invariant 7), ids URL/`#anchor`-safe (protects VAL-CTX-002 source-linking), ISO dates, non-empty text. Also a governance demo asset.
+- **Generator** `scripts/generate_personas.py` — hybrid: deterministic+seedable by default (no key; bulk + a fixed edge-case set), open-weight LLM opt-in (`--llm`, gpt-oss-120b, gated before write — Invariant 4). Committed deterministic fixtures live in `tests/fixtures/personas/`.
+- **New hero personas STAGED in `app/data/personas_staged/`**, NOT added to the live `app/data/personas/` yet. Reason: that dir is frozen/shared and `test_m1_foundation.py` asserts exactly 3 personas — adding now would break the live M3/M4/M5 streams. **Coordination point: merge staged → live at M6 and update the count assertion then.** Staged set fills demo gaps: `noah-bennett` (DRAFT — meeting just held), `marcus-fielding` (DENY — option unavailable, routed to a human), `ivy-castellano` (ESCALATE — wellbeing/self-harm cue, distinct from Leah's exploitation example).
+
+### D-006 — OpenRouter key sourced from gitignored `orkey.txt`; never committed
+**Date**: 2026-06-03 · **By**: Jakob (provided key in `orkey.txt`) · **Status**: Active · **Touches**: D-002, secret hygiene
+
+The key lives in `orkey.txt` at the repo root, added to `.gitignore` (alongside the existing `.env`/`*.key` rules) so it is never committed. App + tooling read `OPENROUTER_API_KEY` from the environment; `generate_personas.py` falls back to reading `orkey.txt` (before importing the provider, which captures the key at construction). For the running app: `export OPENROUTER_API_KEY="$(cat orkey.txt)"`. Config stays frozen — the key is supplied via env, swap to sovereign infra remains a base-URL+key change (D-002).
+
 ---
 
 ## Discovered facts
@@ -62,5 +75,5 @@ The M2 validator found that `decision_log.record(author=...)` originally stored 
 ## Known / deferred issues
 
 ### KI-001 — Live inference path (VAL-GOV-002 network leg) unverified until a key is set
-**Date**: 2026-06-03 · **Severity**: low (expected) · **Status**: open
-`OPENROUTER_API_KEY` is not set in the dev environment, so no real open-weight model call has been made end-to-end. The *guards* (open-weight allowlist + closed-model refusal) are verified by execution; only the live round-trip is deferred. **Resolve by**: setting the key and running `python -m scripts.smoke_inference` (expect "INFERENCE OK"). Must be green before the M6/M7 governance validation and the demo.
+**Date**: 2026-06-03 · **Severity**: low (expected) · **Status**: RESOLVED 2026-06-03
+~~`OPENROUTER_API_KEY` is not set in the dev environment, so no real open-weight model call has been made end-to-end.~~ **Resolved**: key supplied (D-006); `python -m scripts.smoke_inference` returned `[OK] Model openai/gpt-oss-120b replied: 'INFERENCE OK'`. Live open-weight round-trip confirmed; the M3 CTX brief and the LLM generator mode both exercise it. Guards (open-weight allowlist + closed-model refusal) remain verified by execution.

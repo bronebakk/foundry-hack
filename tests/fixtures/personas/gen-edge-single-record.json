@@ -1,0 +1,19 @@
+{
+  "id": "gen-edge-single-record",
+  "name": "Single Record",
+  "age": 18,
+  "synthetic": true,
+  "demo_note": "Auto-generated EDGE-CASE fixture — synthetic test data only.",
+  "summary_line": "edge-case fixture",
+  "records": [
+    {
+      "id": "edge-r1",
+      "date": "2026-03-01",
+      "source": "Test Source",
+      "author": "system",
+      "type": "test_note",
+      "text": "The only record on file — the brief must cope with one source.",
+      "risk_indicator": false
+    }
+  ]
+}

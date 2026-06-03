@@ -1,13 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Context — Keyworker Workbench{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="/static/context.css" />
 <hgroup>
   <h1>Pre-meeting context</h1>
-  <p>Choose a young person to build a synthesised brief from their records. <small>(AI synthesis arrives in milestone M3; for now this shows the underlying source records.)</small></p>
+  <p>Choose a young person to build a synthesised brief from their records — every claim in
+    the brief traces back to the record it came from. <small>The brief is an AI
+    <strong>proposal</strong> for your judgement, not a record of truth.</small></p>
 </hgroup>
-<ul>
+<ul class="ctx-persona-list">
   {% for p in personas %}
-  <li><a href="/context/{{ p.id }}">{{ p.name }}</a>, {{ p.age }} — {{ p.summary_line }}</li>
+  <li>
+    <a href="/context/{{ p.id }}">{{ p.name }}</a>, {{ p.age }} — {{ p.summary_line }}
+    <br /><small>{{ p.record_count }} record(s){% if p.synthetic %} · <span class="tag-synthetic">synthetic</span>{% endif %}</small>
+  </li>
   {% endfor %}
 </ul>
 {% endblock %}

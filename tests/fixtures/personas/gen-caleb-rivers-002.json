@@ -1,0 +1,37 @@
+{
+  "id": "gen-caleb-rivers-002",
+  "name": "Caleb Rivers",
+  "age": 18,
+  "synthetic": true,
+  "demo_note": "Auto-generated fictional persona — synthetic test data only. Not a real person; no real records.",
+  "summary_line": "18, young carer; limited availability; motivated but time-poor and easily overcommitted.",
+  "records": [
+    {
+      "id": "gen-caleb-rivers-002-r1",
+      "date": "2026-03-06",
+      "source": "School — Education Welfare Officer",
+      "author": "A. Marsh",
+      "type": "ewo_note",
+      "text": "Frequent lateness tied to caring for a younger sibling before school. Bright; teachers describe as reliable when there.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-caleb-rivers-002-r2",
+      "date": "2026-04-13",
+      "source": "Jobcentre Plus — Work Coach note",
+      "author": "P. Nkomo",
+      "type": "work_coach_note",
+      "text": "Keen on part-time work that fits around home. Worried about losing flexibility. Marked as needing additional support.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-caleb-rivers-002-r3",
+      "date": "2026-05-20",
+      "source": "Northgate Futures — Keyworker note",
+      "author": "S. Ellison (Keyworker)",
+      "type": "keyworker_note",
+      "text": "Clear about wanting childcare or healthcare work. Needs hours that flex around caring; a rigid timetable will lose them.",
+      "risk_indicator": false
+    }
+  ]
+}

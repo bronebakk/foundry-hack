@@ -1,0 +1,19 @@
+{
+  "id": "gen-edge-long-text",
+  "name": "Long Text",
+  "age": 18,
+  "synthetic": true,
+  "demo_note": "Auto-generated EDGE-CASE fixture — synthetic test data only.",
+  "summary_line": "edge-case fixture",
+  "records": [
+    {
+      "id": "edge-r1",
+      "date": "2026-03-01",
+      "source": "Test Source",
+      "author": "system",
+      "type": "test_note",
+      "text": "Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. Lorem context. ",
+      "risk_indicator": false
+    }
+  ]
+}

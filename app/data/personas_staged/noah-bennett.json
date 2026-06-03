@@ -1,0 +1,46 @@
+{
+  "id": "noah-bennett",
+  "name": "Noah Bennett",
+  "age": 18,
+  "synthetic": true,
+  "demo_note": "Fictional persona — synthetic demo data only. Not a real person, no real records. Built to demo the DRAFT surface: a meeting just held, ready to be written up as a case note.",
+  "summary_line": "18, left sixth form after one term; days and nights flipped; wants games/IT work; opens up over shared interests.",
+  "records": [
+    {
+      "id": "noah-r1",
+      "date": "2025-12-05",
+      "source": "Kingsmead Sixth Form — Pastoral note",
+      "author": "H. Okonkwo (Tutor)",
+      "type": "pastoral_note",
+      "text": "Noah left the BTEC IT course after the autumn term. Capable — strong on the practical units — but attendance collapsed after October. Said he 'wasn't sleeping right'. Polite, never any trouble; just stopped coming in.",
+      "risk_indicator": false
+    },
+    {
+      "id": "noah-r2",
+      "date": "2026-01-30",
+      "source": "Jobcentre Plus — Work Coach note",
+      "author": "T. Howells (Work Coach)",
+      "type": "work_coach_note",
+      "text": "Wants 'something with computers' — mentioned games and IT support. Says he can't do early starts; his sleep is 'all over the place'. Agreed to look at flexible or later-start options. Marked as needing additional support.",
+      "risk_indicator": false
+    },
+    {
+      "id": "noah-r3",
+      "date": "2026-03-04",
+      "source": "Northgate Futures (charity) — Keyworker intake",
+      "author": "Sam Ellison (Keyworker)",
+      "type": "keyworker_note",
+      "text": "First proper conversation — clicked once we talked about the games he builds in his spare time. Clearly skilled and self-taught. The 'dropped out' framing misses it: he's been making things the whole time, just not in a classroom at 9am. Sleep is the real blocker. Plan: find a later-start IT/games pathway and tackle the sleep routine.",
+      "risk_indicator": false
+    },
+    {
+      "id": "noah-r4",
+      "date": "2026-03-18",
+      "source": "Northgate Futures — Meeting quick-capture (to write up)",
+      "author": "Sam Ellison (Keyworker)",
+      "type": "meeting_capture",
+      "text": "Bullets from today's session, to write up properly: showed me a game demo he made; really good. Open College has an evening Level 2 IT course (starts 4pm) — he liked the time. Worried about funding + getting there (no bus money). Agreed I'd check funding and he'd come to next Tuesday's drop-in. Mood up today.",
+      "risk_indicator": false
+    }
+  ]
+}

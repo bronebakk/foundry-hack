@@ -1,0 +1,46 @@
+{
+  "id": "marcus-fielding",
+  "name": "Marcus Fielding",
+  "age": 20,
+  "synthetic": true,
+  "demo_note": "Fictional persona — synthetic demo data only. Not a real person, no real records. Built to demo the DENY surface: an option is unavailable on its usual route, so the system must surface alternatives and route any refusal to a human — never a machine 'no'.",
+  "summary_line": "20, set on a Level 3 engineering course, but the fully-funded place he applied for is 16–19 only; motivated and ready to start.",
+  "records": [
+    {
+      "id": "marcus-r1",
+      "date": "2026-02-10",
+      "source": "Fenwick College — Admissions note",
+      "author": "R. Della (Admissions)",
+      "type": "admissions_note",
+      "text": "Marcus applied for the September Level 3 Engineering programme. The fully-funded place he applied under is restricted to 16–19-year-olds; at 20 he falls outside it. Strong application and clearly motivated. Adult learner funding routes exist (Advanced Learner Loan; possible bursary) but are a separate process.",
+      "risk_indicator": false
+    },
+    {
+      "id": "marcus-r2",
+      "date": "2026-02-21",
+      "source": "Jobcentre Plus — Work Coach note",
+      "author": "T. Howells (Work Coach)",
+      "type": "work_coach_note",
+      "text": "Disappointed the 'free' place isn't open to him but determined. Discussed alternatives: Advanced Learner Loan for 19+, the college's hardship bursary, and a possible apprenticeship route into the same field. Asked me to help him compare them properly.",
+      "risk_indicator": false
+    },
+    {
+      "id": "marcus-r3",
+      "date": "2026-02-28",
+      "source": "Northgate Futures (charity) — Keyworker note",
+      "author": "Sam Ellison (Keyworker)",
+      "type": "keyworker_note",
+      "text": "Marcus is worried someone will just tell him 'no, you're too old' and that's that. My job is the opposite: lay out the actual options (loan, bursary, apprenticeship) and help him choose. The standard funded place isn't open to him — but the door to the course isn't closed, and I'll be the one to walk him through it, not a form.",
+      "risk_indicator": false
+    },
+    {
+      "id": "marcus-r4",
+      "date": "2026-03-02",
+      "source": "Northgate Futures — Self-referral form (Marcus's own words)",
+      "author": "Marcus Fielding",
+      "type": "self_referral",
+      "text": "Wrote: 'I just want to know if there's any way I can still do this course. I don't mind doing it differently, I just don't want to be told to forget it.'",
+      "risk_indicator": false
+    }
+  ]
+}

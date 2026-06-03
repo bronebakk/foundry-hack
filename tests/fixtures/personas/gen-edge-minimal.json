@@ -1,0 +1,19 @@
+{
+  "id": "gen-edge-minimal",
+  "name": "Minimal Fields",
+  "age": 20,
+  "synthetic": true,
+  "demo_note": "Auto-generated EDGE-CASE fixture — minimal optional fields.",
+  "summary_line": "minimal valid persona",
+  "records": [
+    {
+      "id": "edge-r1",
+      "date": "2026-02-02",
+      "source": "S",
+      "author": "A",
+      "type": "t",
+      "text": "Minimal but valid record.",
+      "risk_indicator": false
+    }
+  ]
+}

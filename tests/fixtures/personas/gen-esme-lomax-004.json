@@ -1,0 +1,39 @@
+{
+  "id": "gen-esme-lomax-004",
+  "name": "Esme Lomax",
+  "age": 20,
+  "synthetic": true,
+  "demo_note": "Auto-generated fictional persona — synthetic test data only. Not a real person; no real records.",
+  "summary_line": "20, diagnosed ADHD; strong with structure and interest-led tasks; struggles with open-ended admin.",
+  "records": [
+    {
+      "id": "gen-esme-lomax-004-r1",
+      "date": "2026-05-06",
+      "source": "College — SEND / Learning Support",
+      "author": "A. Marsh",
+      "type": "send_note",
+      "text": "EHCP in place; benefits from clear steps and short tasks. Disengages from long, unstructured sessions.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-esme-lomax-004-r2",
+      "date": "2026-06-13",
+      "source": "Employer — Work trial feedback",
+      "author": "P. Nkomo",
+      "type": "employer_feedback",
+      "text": "Excellent on detailed, interest-led tasks; needed reminders for routine admin. Manager happy to accommodate with structure.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-esme-lomax-004-r3",
+      "date": "2026-07-20",
+      "source": "Northgate Futures — Keyworker note",
+      "author": "S. Ellison (Keyworker)",
+      "type": "keyworker_note",
+      "text": "Sharp and curious when the task is concrete. Wants IT/digital work. One-page checklists work far better than emails.",
+      "risk_indicator": true,
+      "risk_category": "Low mood / possible self-harm",
+      "risk_rationale": "Disclosed feeling 'numb' and mentioned old marks on their arm in passing; declined to say more. A welfare cue for the worker to follow up sensitively — surfaced, not acted on."
+    }
+  ]
+}
