@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Drafting · {{ persona.name }} — Keyworker Workbench{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="/static/drafting.css" />
+
+<hgroup>
+  <h1>Drafting for {{ persona.name }} <span class="tag-synthetic">synthetic</span></h1>
+  <p>{{ persona.summary_line }}</p>
+</hgroup>
+
+<details class="draft-sources">
+  <summary>Source records this draws from ({{ persona.record_count }})</summary>
+  {% for r in persona.records %}
+  <article class="draft-source">
+    <small><strong>{{ r.date }}</strong> · {{ r.source }} · {{ r.author }}
+      {% if r.risk_indicator %}<span class="tag-risk">safeguarding signal</span>{% endif %}
+    </small>
+    <p>{{ r.text }}</p>
+  </article>
+  {% endfor %}
+</details>
+
+<div class="grid">
+  <article>
+    <header><strong>Draft a case note</strong></header>
+    <form hx-post="/drafting/{{ persona.id }}/generate" hx-target="#draft-slot"
+          hx-swap="innerHTML" hx-indicator="#draft-busy">
+      <input type="hidden" name="proposal_type" value="case_note" />
+      <label>What happened in the meeting? <small>(optional — helps the draft)</small>
+        <textarea name="meeting_notes" rows="3"
+          placeholder="e.g. Met at the café. Keen on the September hair & beauty course; worried about the application."></textarea>
+      </label>
+      <button type="submit">Draft case note</button>
+    </form>
+  </article>
+
+  <article>
+    <header><strong>Draft a follow-up message</strong></header>
+    <p><small>A short message to {{ persona.name.split()[0] }} in your voice. It stays a draft —
+       sending is a separate, explicit action.</small></p>
+    <form hx-post="/drafting/{{ persona.id }}/generate" hx-target="#draft-slot"
+          hx-swap="innerHTML" hx-indicator="#draft-busy">
+      <input type="hidden" name="proposal_type" value="follow_up" />
+      <button type="submit">Draft follow-up message</button>
+    </form>
+  </article>
+</div>
+
+<p id="draft-busy" class="htmx-indicator" aria-busy="true">Drafting…</p>
+<div id="draft-slot"></div>
+
+{% include "drafting/_ledger.html" %}
+
+<p><a href="/drafting/" role="button" class="secondary">← All personas</a></p>
+{% endblock %}
