@@ -18,7 +18,7 @@ from fastapi.testclient import TestClient
 from app import config, db as dbmod
 from app.main import app
 from app.models import Disposition, ProposalType
-from app.services import decision_log
+from app.services import decision_log, integrity
 
 PERSONA = "leah-sumner"
 RISK_RECORD = "leah-r2"
@@ -40,6 +40,25 @@ def client():
 def _count() -> int:
     with dbmod.get_conn() as conn:
         return conn.execute("SELECT COUNT(*) AS c FROM decision_log").fetchone()["c"]
+
+
+def _escalate(client, persona=PERSONA, sign=True, **fields):
+    """POST an escalation with a valid provenance signature (A08) unless sign=False."""
+    data = {"disposition": "escalate", "proposal_text": "", "final_text": "", "model": ""}
+    data.update(fields)
+    if sign:
+        data["proposal_sig"] = integrity.sign(integrity.provenance(
+            persona, "escalation", "risk_flag", data["model"], data["proposal_text"]))
+    return client.post(f"/escalation/{persona}/escalate", data=data)
+
+
+def _refer(client, persona=PERSONA, sign=True, **fields):
+    data = {"context_text": "", "final_text": ""}
+    data.update(fields)
+    if sign:
+        data["proposal_sig"] = integrity.sign(integrity.provenance(
+            persona, "escalation", "follow_up", "", data["context_text"]))
+    return client.post(f"/escalation/{persona}/refer", data=data)
 
 
 # --- The bright line: surfacing acts on nothing ---------------------------------------------
@@ -80,15 +99,8 @@ def test_persona_page_states_no_automatic_action(client):
 
 def test_human_escalate_creates_entry_attributed_to_the_worker(client):
     assert _count() == 0
-    resp = client.post(
-        f"/escalation/{PERSONA}/escalate",
-        data={
-            "disposition": "escalate",
-            "proposal_text": "Record-derived concern summary.",
-            "final_text": "I'm escalating this to the safeguarding lead today.",
-            "model": "",
-        },
-    )
+    resp = _escalate(client, proposal_text="Record-derived concern summary.",
+                     final_text="I'm escalating this to the safeguarding lead today.")
     assert resp.status_code == 200
     assert _count() == 1
     entry = decision_log.list_entries(persona_id=PERSONA)[0]
@@ -101,26 +113,15 @@ def test_human_escalate_creates_entry_attributed_to_the_worker(client):
 
 def test_escalate_ignores_any_client_supplied_author(client):
     """D-004: author is set server-side. A spoofed author field must be ignored."""
-    client.post(
-        f"/escalation/{PERSONA}/escalate",
-        data={
-            "disposition": "escalate",
-            "proposal_text": "x",
-            "final_text": "y",
-            "author": "Mallory (spoofed)",        # must be ignored
-            "model": config.PRIMARY_MODEL,         # even a model id must never become author
-        },
-    )
+    _escalate(client, proposal_text="x", final_text="y",
+              author="Mallory (spoofed)",        # must be ignored
+              model=config.PRIMARY_MODEL)         # even a model id must never become author
     entry = decision_log.list_entries(persona_id=PERSONA)[0]
     assert entry.author == config.DEMO_WORKER
 
 
 def test_escalation_arrives_in_the_human_owned_inbox(client):
-    client.post(
-        f"/escalation/{PERSONA}/escalate",
-        data={"disposition": "escalate", "proposal_text": "ctx",
-              "final_text": "Escalating for review.", "model": ""},
-    )
+    _escalate(client, proposal_text="ctx", final_text="Escalating for review.")
     body = client.get("/escalation/inbox").text
     assert "Leah Sumner" in body
     assert config.DEMO_WORKER in body          # attributed to the worker who sent it
@@ -130,10 +131,7 @@ def test_escalation_arrives_in_the_human_owned_inbox(client):
 
 def test_machine_marks_nothing_resolved(client):
     """The inbox is human-owned: the system never sets a 'resolved' state."""
-    client.post(
-        f"/escalation/{PERSONA}/escalate",
-        data={"disposition": "escalate", "proposal_text": "c", "final_text": "f", "model": ""},
-    )
+    _escalate(client, proposal_text="c", final_text="f")
     body = client.get("/escalation/inbox").text.lower()
     assert "awaiting human review" in body
     assert "resolved" not in body or "marks nothing" in body  # no machine-set resolution
@@ -142,10 +140,7 @@ def test_machine_marks_nothing_resolved(client):
 # --- "Not now" is a logged human review, not an escalation ----------------------------------
 
 def test_discard_records_a_review_and_does_not_reach_the_inbox(client):
-    client.post(
-        f"/escalation/{PERSONA}/escalate",
-        data={"disposition": "discard", "proposal_text": "c", "final_text": "ignored", "model": ""},
-    )
+    _escalate(client, disposition="discard", proposal_text="c", final_text="ignored")
     entry = decision_log.list_entries(persona_id=PERSONA)[0]
     assert entry.disposition == Disposition.DISCARD.value
     assert entry.final_text is None
@@ -168,11 +163,8 @@ def test_deny_surface_has_no_machine_refusal_and_offers_alternative_and_human_pa
 
 
 def test_refer_routes_the_decision_to_a_human(client):
-    resp = client.post(
-        f"/escalation/{PERSONA}/refer",
-        data={"context_text": "course full; alternatives exist",
-              "final_text": "Please review Leah's options and get back to her."},
-    )
+    resp = _refer(client, context_text="course full; alternatives exist",
+                  final_text="Please review Leah's options and get back to her.")
     assert resp.status_code == 200
     entry = decision_log.list_entries(persona_id=PERSONA)[0]
     assert entry.disposition == Disposition.ESCALATE.value      # routed to a human

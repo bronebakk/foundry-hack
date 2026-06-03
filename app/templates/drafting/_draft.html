@@ -6,4 +6,13 @@
 {% if inference_note %}
 <p class="muted" role="note" style="margin-bottom:.6rem; font-size:.85rem;">⚠ {{ inference_note }}</p>
 {% endif %}
+{% if denial_phrases %}
+{# Invariant 2: the system must never carry a 'no'. Flag, don't block — the worker decides. #}
+<div class="callout" role="alert" style="background:var(--risk-bg); color:var(--risk-text); border-color:var(--risk-border); border-left-color:var(--risk); margin-bottom:.8rem;">
+  <span class="ic" aria-hidden="true">⚠</span>
+  <div><strong>This draft reads like a refusal.</strong> The system must never be the bearer of a
+    "no" to a young person (Invariant 2). Please reword before sending — a refusal is for a person to
+    deliver, with a reason and an alternative. Flagged: {% for p in denial_phrases %}<code>{{ p }}</code>{% if not loop.last %}, {% endif %}{% endfor %}.</div>
+</div>
+{% endif %}
 {% include "_proposal.html" with context %}

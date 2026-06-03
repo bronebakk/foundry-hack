@@ -16,6 +16,7 @@ import binascii
 import hashlib
 import hmac
 import json
+import logging
 import os
 from functools import lru_cache
 
@@ -26,6 +27,11 @@ from app.config import APP_DIR
 AUTH_FILE = APP_DIR.parent / "demo_auth.json"
 _PBKDF2_ROUNDS = 200_000
 _REALM = "Keyworker Force-Multiplier demo"  # ASCII only — goes in a latin-1 HTTP header
+_DUMMY_SALT = b"\x00" * 16  # constant salt for unknown-user timing equalisation (A07)
+
+# Structured security event log, distinct from the governance decision log (A09). Records auth
+# outcomes for alerting; never logs the password or special-category content.
+_seclog = logging.getLogger("app.security")
 
 # Paths that stay open (liveness probe + static assets so CSS loads on the login challenge page).
 _EXEMPT_PREFIXES = ("/static",)
@@ -54,6 +60,9 @@ def _users() -> dict[str, dict[str, str]]:
 def verify_credentials(username: str, password: str) -> bool:
     rec = _users().get(username)
     if not rec:
+        # Equalise timing (A07): do the same PBKDF2 work for an unknown username as for a known
+        # one, so a valid username is not measurably faster (username enumeration via timing).
+        hash_password(password, _DUMMY_SALT)
         return False
     try:
         salt = bytes.fromhex(rec["salt"])
@@ -81,13 +90,18 @@ async def require_user(request: Request) -> None:
     if path in _EXEMPT_EXACT or path.startswith(_EXEMPT_PREFIXES):
         return
 
+    client = request.client.host if request.client else "?"
     header = request.headers.get("Authorization", "")
     if not header.startswith("Basic "):
+        _seclog.warning("auth: missing credentials for %s from %s", path, client)
         raise _challenge()
     try:
         decoded = base64.b64decode(header[6:], validate=True).decode("utf-8")
     except (binascii.Error, ValueError, UnicodeDecodeError):
+        _seclog.warning("auth: malformed Basic header from %s", client)
         raise _challenge()
     username, sep, password = decoded.partition(":")
     if not sep or not verify_credentials(username, password):
+        # Log the attempted username (never the password) for alerting on brute-force.
+        _seclog.warning("auth: failed login for username=%r from %s", username, client)
         raise _challenge()

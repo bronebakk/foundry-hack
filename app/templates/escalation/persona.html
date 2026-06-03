@@ -55,6 +55,7 @@
   {% endif %}
 
   {% set proposal = item.proposal %}
+  {% set proposal_sig = item.sig %}
   {% set action_url = "/escalation/" ~ persona.id ~ "/escalate" %}
   {% set proposal_type_label = "Safeguarding escalation note" %}
   {% set foot = "The AI drafts; you decide. Nothing is sent until you escalate. Escalation is your decision and lands in a human-owned queue." %}
@@ -99,8 +100,9 @@
     {% endif %}
 
     <form method="post" action="/escalation/{{ persona.id }}/refer" style="margin-top:1rem;">
-      <input type="hidden" name="context_text"
-             value="{{ persona.name }} asked (own words) about an option that isn't open on its usual route. Routing the decision to a keyworker to review the alternatives on file and come back with a route and a reason." />
+      {# A08: context_text + signature are server-built; the log records the trusted text. #}
+      <input type="hidden" name="context_text" value="{{ refer_context }}" />
+      <input type="hidden" name="proposal_sig" value="{{ refer_sig }}" />
       <label>Hand this to a keyworker to decide and deliver <span class="hint">(edit freely — your words)</span>
         <textarea name="final_text" rows="3">Please review {{ persona.name }}'s options and come back to them with a route they can take up and a real alternative — they specifically don't want to just be told "no".</textarea>
       </label>

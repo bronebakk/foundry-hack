@@ -17,7 +17,7 @@ from fastapi.testclient import TestClient
 from app import config
 from app import db as dbmod
 from app.main import app
-from app.services import decision_log
+from app.services import decision_log, integrity
 from app.services.inference import Completion
 
 client = TestClient(app)
@@ -60,7 +60,7 @@ def _count() -> int:
         return conn.execute("SELECT COUNT(*) AS c FROM decision_log").fetchone()["c"]
 
 
-def _dispose(**fields):
+def _dispose(sign=True, **fields):
     base = {
         "persona_id": PERSONA,
         "surface": "drafting",
@@ -69,6 +69,9 @@ def _dispose(**fields):
         "model": config.PRIMARY_MODEL,
     }
     base.update(fields)
+    if sign:  # a legitimate disposition carries the server's provenance signature (A08)
+        base["proposal_sig"] = integrity.sign(integrity.provenance(
+            PERSONA, base["surface"], base["proposal_type"], base["model"], base["proposal_text"]))
     return client.post(f"/drafting/{PERSONA}/dispose", data=base)
 
 

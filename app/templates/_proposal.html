@@ -31,6 +31,9 @@
       <input type="hidden" name="proposal_type" value="{{ proposal.proposal_type.value }}" />
       <input type="hidden" name="proposal_text" value="{{ proposal.proposal_text }}" />
       <input type="hidden" name="model" value="{{ proposal.model or '' }}" />
+      {# Tamper-evident provenance (A08): the server signed proposal_text + model; the disposition
+         endpoint re-verifies, so these cannot be forged client-side. #}
+      <input type="hidden" name="proposal_sig" value="{{ proposal_sig }}" />
 
       {% if editable is not defined or editable %}
       <label>Your version <span class="hint">— edit freely; your words are what gets committed</span>
