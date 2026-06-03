@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Safeguarding inbox — Keyworker Workbench{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="/static/escalation.css" />
+
+<p><a href="/escalation/" class="secondary">← Safeguarding overview</a></p>
+
+<hgroup>
+  <h1>Safeguarding inbox</h1>
+  <p>A <strong>human-owned</strong> queue. Every item here arrived <strong>because a worker
+  chose to send it</strong> — never automatically. The system does not resolve anything in this
+  queue; a designated safeguarding lead owns and closes these off-system.</p>
+</hgroup>
+
+<div class="esc-inbox-owner" role="note">
+  <small>Owned by: <strong>Safeguarding Lead (human)</strong> · The machine marks nothing
+  “resolved”.</small>
+</div>
+
+{% if items %}
+<div class="esc-queue">
+  {% for it in items %}
+  {% set e = it.entry %}
+  <article class="esc-queue-item">
+    <header>
+      {% if it.is_safeguarding %}
+        <span class="tag-risk">safeguarding escalation</span>
+      {% else %}
+        <span class="tag-synthetic">decision needed (human)</span>
+      {% endif %}
+      <strong>{{ it.persona_name }}</strong>
+      <small>· entry #{{ e.id }} · {{ e.created_at }}</small>
+    </header>
+
+    <p class="esc-arrived"><small>↳ Arrived because <strong>{{ e.author }}</strong> sent it.
+      Not auto-generated.</small></p>
+
+    {% if e.final_text %}
+    <blockquote>{{ e.final_text }}</blockquote>
+    {% endif %}
+
+    {% if e.proposal_text %}
+    <details>
+      <summary>Context the worker had</summary>
+      <p><small>{{ e.proposal_text }}</small></p>
+    </details>
+    {% endif %}
+
+    <footer>
+      <small><span class="esc-status">Awaiting human review</span> ·
+      a person decides and resolves this — the system will not.</small>
+    </footer>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p>The inbox is empty. Nothing reaches this queue unless a worker explicitly sends it from a
+young person's safeguarding view.</p>
+{% endif %}
+
+{% endblock %}

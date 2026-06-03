@@ -1,13 +1,45 @@
 {% extends "base.html" %}
-{% block title %}{{ heading }} — Keyworker Workbench{% endblock %}
+{% block title %}Safeguarding — Keyworker Workbench{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="/static/escalation.css" />
+
 <hgroup>
-  <h1>{{ heading }}</h1>
-  <p>{{ blurb }}</p>
+  <h1>Safeguarding</h1>
+  <p>Risk indicators in the records are <strong>surfaced for your judgement</strong>. The system
+  takes no action on them — no automatic notification, no automatic referral. You decide what
+  happens next.</p>
 </hgroup>
-<article class="proposal">
-  <span class="proposal-label">Scaffold — built in {{ milestone }}</span>
-  <p>This surface is registered and routed. Its functionality is delivered in mission {{ milestone }}.</p>
-</article>
-<p><a href="/" role="button" class="secondary">← Back to caseload</a></p>
+
+{% if error %}<p class="esc-error" role="alert">{{ error }}</p>{% endif %}
+
+<p>
+  <a href="/escalation/inbox" role="button" class="contrast">
+    Safeguarding inbox{% if inbox_count %} ({{ inbox_count }}){% endif %} →
+  </a>
+  <small>&nbsp;A human-owned queue. Items arrive only when a worker sends them.</small>
+</p>
+
+<h2>Young people with a signal in their records</h2>
+{% if flagged %}
+<div class="grid">
+  {% for p in flagged %}
+  <article>
+    <header>
+      <strong>{{ p.name }}</strong>, {{ p.age }}
+      {% if p.synthetic %}<span class="tag-synthetic">synthetic</span>{% endif %}
+      <span class="tag-risk">safeguarding signal present</span>
+    </header>
+    <p>{{ p.summary_line }}</p>
+    <footer>
+      <small>{{ p.record_count }} source record(s)</small><br />
+      <a href="/escalation/{{ p.id }}" role="button" class="secondary">Review the signal</a>
+    </footer>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p>No signals surfaced across the current synthetic caseload.</p>
+{% endif %}
+
+<p><a href="/" class="secondary">← Back to caseload</a></p>
 {% endblock %}

@@ -47,6 +47,16 @@ The M2 validator found that `decision_log.record(author=...)` originally stored 
 ### F-001 — M1 (Foundation) gate PASSED
 **Date**: 2026-06-03 · Fresh-context validator, no blocking issues. All 6 M1 deliverables + 3 GOV groundwork checks PASS. The two load-bearing guarantees were verified by live execution, not just code reading: (1) `decision_log` UPDATE/DELETE actually aborted by DB triggers; (2) `InferenceProvider` actually refused `openai/gpt-4o` before any network call. 7/7 tests pass. Env: Python 3.13.7, deps in `.venv`.
 
+### F-003 — M5 (ESCALATE surface) gate PASSED
+**Date**: 2026-06-03 · Fresh-context validator, adversarial pass. Branch `m5-escalation` (off `main` at M2), worktree-isolated; owned files only (`app/routers/escalation.py`, `app/templates/escalation/*`, `app/static/escalation.css`, `tests/test_m5_escalation.py`); no frozen files touched. All three target assertions PASS by observed behaviour of the running app:
+- **VAL-ESCALATE-001** — `leah-sumner`/`leah-r2` CSE/CCE flag surfaced with source record text + "why flagged" rationale (explainability); decision-log count unchanged (5→5) across loading the overview, persona flag page, and inbox — surfacing acts on nothing.
+- **VAL-ESCALATE-002** — escalation fires only on a human POST; adversarial spoof (`author=Mallory` + `model=gpt-4-turbo` in the form) defeated — recorded `author='Sam Ellison (keyworker)'` server-side (D-004). Lands in a human-owned safeguarding inbox framed "arrived because the worker sent it"; machine marks nothing "resolved".
+- **VAL-DENY-001** — unavailable option (Hair & Beauty Sept intake full) shown with concrete alternatives + a "send to a keyworker to decide" human handoff; no machine-authored refusal anywhere.
+
+27/27 tests pass (15 prior + 12 new). Inference offline (no key) degraded gracefully — no 500s.
+
+**Non-blocking note (not fixed, by design):** the escalate handler echoes the `_proposal.html` hidden `model` field onto the `Proposal` as generation provenance — a client could write a false/closed model id into the *provenance* column (not authorship). Left consistent with the frozen shared `_proposal.html` contract used by all streams; the load-bearing guarantee (author of record = server-side `config.DEMO_WORKER`) is correctly enforced. Flag for M6 if cross-stream provenance hardening is wanted.
+
 ---
 
 ## Known / deferred issues
