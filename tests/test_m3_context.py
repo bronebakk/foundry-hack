@@ -74,6 +74,24 @@ def test_parse_brief_json_tolerates_fences_and_prose():
     assert ctx.parse_brief_json("") == []
 
 
+def test_parse_brief_json_salvages_truncated_array():
+    """Regression: a real open-weight model hit the token cap mid-array, leaving the final
+    object cut off and the array unclosed. The old slice-to-last-']' returned nothing; the
+    salvage scan must recover every COMPLETE object and drop only the truncated tail."""
+    truncated = (
+        '[\n  {"statement":"Attendance is down to 41%.","source_record_ids":["leah-r1"]},\n'
+        '  {"statement":"Older male, gifts, unexplained money.","source_record_ids":["leah-r2"]},\n'
+        '  {"statement":"She asked for help with a college cour'  # cut off mid-string
+    )
+    parsed = ctx.parse_brief_json(truncated)
+    assert len(parsed) == 2  # two complete objects recovered, broken tail dropped
+    assert parsed[0]["source_record_ids"] == ["leah-r1"]
+    assert parsed[1]["source_record_ids"] == ["leah-r2"]
+    # And the recovered objects still pass the attribution guard.
+    stmts = ctx.attributable_statements(_persona(), parsed)
+    assert len(stmts) == 2
+
+
 # --- Rendered surface: every brief line links to an existing record anchor ---
 
 class _FakeProvider:

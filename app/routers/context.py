@@ -32,19 +32,26 @@ from app.templating import render
 
 router = APIRouter(prefix="/context", tags=["context"])
 
-# Keep latency demo-reasonable: a brief is a handful of bullets, not an essay.
-_BRIEF_MAX_TOKENS = 700
+# Headroom so the JSON array isn't truncated mid-object. parse_brief_json salvages a
+# truncated tail too, but we'd rather not lose the last bullet. The prompt caps the bullet
+# count so the brief stays glanceable (a transcription both bloats tokens and fails VAL-CTX-001).
+_BRIEF_MAX_TOKENS = 1200
 _BRIEF_TEMPERATURE = 0.2
+# Open-weight sampling occasionally returns an unparseable/degenerate response; one cheap
+# retry makes the demo path reliable without masking a genuine outage.
+_BRIEF_ATTEMPTS = 2
 
 _SYSTEM_PROMPT = (
     "You are a careful drafting assistant for a frontline keyworker who re-engages young "
-    "people. You synthesise a young person's case records into a short pre-meeting brief. "
+    "people. You SYNTHESISE a young person's case records into a short pre-meeting brief. "
     "You are PROPOSING context for a human to check — you never decide anything. "
     "Hard rules: (1) State ONLY what the supplied records support; never invent facts, "
     "names, dates, diagnoses, or outcomes. (2) Attach to EVERY statement the id(s) of the "
     "record(s) it is based on. If you cannot tie a statement to a specific record, do not "
-    "write it. (3) Be concise and glanceable — a busy worker reads this in 60 seconds. "
-    "(4) Do not deliver any refusal or denial about the young person; surface context only."
+    "write it. (3) SYNTHESISE — group related facts into a few crisp lines; do NOT restate "
+    "the records sentence by sentence. Aim for 5–7 glanceable bullets a busy worker reads in "
+    "60 seconds. (4) Do not deliver any refusal or denial about the young person; surface "
+    "context only."
 )
 
 
@@ -87,12 +94,13 @@ def build_brief_prompt(persona: Persona) -> str:
         )
     lines += [
         "",
-        "Write a concise pre-meeting brief covering, where the records support it: who they "
-        "are and where they're at now; barriers; what has worked or what they've asked for; "
-        "and a suggested focus for the meeting.",
+        "Write a concise, SYNTHESISED pre-meeting brief (5–7 bullets max) covering, where the "
+        "records support it: who they are and where they're at now; barriers; what has worked "
+        "or what they've asked for; and a suggested focus for the meeting. Group related facts "
+        "— do not echo each record sentence by sentence.",
         "",
         "Return ONLY a JSON array, no prose, no markdown fences. Each element is "
-        '{"statement": "<one short sentence>", "source_record_ids": ["<record id>", ...]}. '
+        '{"statement": "<one short synthesised sentence>", "source_record_ids": ["<record id>", ...]}. '
         "Every statement MUST cite at least one real record id from the list above. "
         "Omit anything you cannot attribute.",
     ]
@@ -101,8 +109,10 @@ def build_brief_prompt(persona: Persona) -> str:
 
 def parse_brief_json(text: str) -> list[dict]:
     """Tolerantly extract the JSON array of brief items from a model response. Handles
-    ```json fences and leading/trailing prose by slicing to the outermost brackets.
-    Returns [] if nothing parseable is found (caller treats that as 'empty')."""
+    ```json fences and leading/trailing prose, and — crucially — *truncated* output: an
+    open-weight model that hits the token cap mid-array would otherwise yield nothing, so we
+    salvage every complete ``{...}`` object and drop only the cut-off tail. Returns [] if
+    nothing parseable is found (caller treats that as 'empty')."""
     if not text:
         return []
     s = text.strip()
@@ -111,14 +121,53 @@ def parse_brief_json(text: str) -> list[dict]:
         s = s.split("```", 2)[1] if s.count("```") >= 2 else s.strip("`")
         if s.lstrip().lower().startswith("json"):
             s = s.lstrip()[4:]
-    start, end = s.find("["), s.rfind("]")
-    if start == -1 or end == -1 or end < start:
+    start = s.find("[")
+    if start == -1:
         return []
-    try:
-        parsed = json.loads(s[start : end + 1])
-    except (json.JSONDecodeError, ValueError):
-        return []
-    return [item for item in parsed if isinstance(item, dict)] if isinstance(parsed, list) else []
+    region = s[start:]
+
+    # Fast path: a clean, complete array.
+    end = region.rfind("]")
+    if end != -1:
+        try:
+            parsed = json.loads(region[: end + 1])
+            if isinstance(parsed, list):
+                return [item for item in parsed if isinstance(item, dict)]
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    # Salvage path: scan for balanced top-level objects (handles a truncated final element).
+    objs: list[dict] = []
+    depth = 0
+    obj_start: int | None = None
+    in_str = False
+    escaped = False
+    for i, ch in enumerate(region):
+        if in_str:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch == "{":
+            if depth == 0:
+                obj_start = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0 and obj_start is not None:
+                try:
+                    obj = json.loads(region[obj_start : i + 1])
+                    if isinstance(obj, dict):
+                        objs.append(obj)
+                except (json.JSONDecodeError, ValueError):
+                    pass
+                obj_start = None
+    return objs
 
 
 def attributable_statements(persona: Persona, items: list[dict]) -> list[BriefStatement]:
@@ -157,25 +206,29 @@ def generate_brief(persona: Persona) -> BriefResult:
             status="not_configured",
             message="Inference not configured — set OPENROUTER_API_KEY to generate the brief.",
         )
-    try:
-        completion = provider.complete(
-            build_brief_prompt(persona),
-            system=_SYSTEM_PROMPT,
-            temperature=_BRIEF_TEMPERATURE,
-            max_tokens=_BRIEF_MAX_TOKENS,
-        )
-    except InferenceError as exc:
-        return BriefResult(status="error", message=f"Inference unavailable: {exc}")
-
-    statements = attributable_statements(persona, parse_brief_json(completion.text))
-    if not statements:
-        return BriefResult(
-            status="empty",
-            model=completion.model,
-            message="The model returned no statement that could be traced to a source record, "
-            "so nothing is shown. The raw records are below.",
-        )
-    return BriefResult(status="ok", statements=tuple(statements), model=completion.model)
+    prompt = build_brief_prompt(persona)
+    last_model: str | None = None
+    for _ in range(_BRIEF_ATTEMPTS):
+        try:
+            completion = provider.complete(
+                prompt,
+                system=_SYSTEM_PROMPT,
+                temperature=_BRIEF_TEMPERATURE,
+                max_tokens=_BRIEF_MAX_TOKENS,
+            )
+        except InferenceError as exc:
+            return BriefResult(status="error", message=f"Inference unavailable: {exc}")
+        last_model = completion.model
+        statements = attributable_statements(persona, parse_brief_json(completion.text))
+        if statements:
+            return BriefResult(status="ok", statements=tuple(statements), model=completion.model)
+    # Both attempts came back with nothing attributable — degrade to records-only.
+    return BriefResult(
+        status="empty",
+        model=last_model,
+        message="The model returned no statement that could be traced to a source record, "
+        "so nothing is shown. The raw records are below.",
+    )
 
 
 # --- Routes ---
