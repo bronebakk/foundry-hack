@@ -9,11 +9,12 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app import config
+from app.auth import require_user
 from app.db import init_db
 from app.services import data
 from app.services.inference import provider
@@ -32,7 +33,13 @@ async def lifespan(app: FastAPI):
 # here as well as in lifespan is safe; per-test temp DBs re-init their own via fixtures.
 init_db()
 
-app = FastAPI(title="Keyworker Force-Multiplier", lifespan=lifespan)
+# Global demo-access gate (HTTP Basic). No-op unless DEMO_AUTH is enabled in the environment,
+# so tests and local runs are unaffected; the public demo deployment sets DEMO_AUTH=1. See app/auth.py.
+app = FastAPI(
+    title="Keyworker Force-Multiplier",
+    lifespan=lifespan,
+    dependencies=[Depends(require_user)],
+)
 app.mount("/static", StaticFiles(directory=str(config.APP_DIR / "static")), name="static")
 
 # All stream routers registered here in M1 — pre-wired stubs for M3/M4/M5/M6.

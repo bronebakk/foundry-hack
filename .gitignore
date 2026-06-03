@@ -3,6 +3,7 @@
 .env.*
 *.key
 orkey.txt
+demo_auth.json
 
 # Python
 __pycache__/
