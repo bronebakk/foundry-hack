@@ -1,0 +1,181 @@
+/* =========================================================================
+   Northgate Futures — Keyworker Workbench
+   colors_and_type.css — the token layer (import first)
+
+   Built on Pico.css v2 (classless), light theme, system-sans. These tokens
+   capture the live build's values: a slate-neutral base + azure primary, plus
+   the semantic GOVERNANCE palette that is the real identity of the product
+   (proposal-grey / committed-green / risk-red / options-blue / synthetic-yellow).
+
+   Source of truth: bronebakk/foundry-hack  app/static/*.css
+   ========================================================================= */
+
+:root {
+  /* ---------------------------------------------------------------------
+     TYPE — system sans only (no web fonts: bandwidth + sovereignty).
+     Monospace appears ONLY for record ids (leah-r2) and the model name.
+     --------------------------------------------------------------------- */
+  --nf-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, Helvetica, Arial, "Helvetica Neue", sans-serif;
+  --nf-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* Type scale — bold sentence-case headings, comfortable high-contrast body.
+     Approximates Pico v2's fluid scale at desktop. */
+  --nf-text-xs:   0.72rem;   /* eyebrow labels, chips, record meta */
+  --nf-text-sm:   0.85rem;   /* small print, banner, footer */
+  --nf-text-base: 1rem;      /* body */
+  --nf-text-lg:   1.125rem;  /* lead / summary line */
+  --nf-text-xl:   1.4rem;    /* h3 / section sub-head */
+  --nf-text-2xl:  1.85rem;   /* h2 — "Surfaced signal" */
+  --nf-text-3xl:  2.4rem;    /* h1 — "Your caseload", "Decision log" */
+
+  --nf-weight-normal: 400;
+  --nf-weight-semibold: 600;
+  --nf-weight-bold: 700;
+
+  --nf-leading-tight: 1.2;
+  --nf-leading-normal: 1.55;
+
+  --nf-tracking-eyebrow: 0.05em;  /* ALL-CAPS micro-labels */
+
+  /* ---------------------------------------------------------------------
+     NEUTRALS — slate base (Pico v2 light)
+     --------------------------------------------------------------------- */
+  --nf-bg:            #ffffff;   /* surfaces / cards */
+  --nf-bg-subtle:     #fbfbfc;   /* page background */
+  --nf-bg-muted:      #f8f9fa;   /* inset / proposal / source panels */
+  --nf-fg:            #373c44;   /* body text, also the "contrast" button */
+  --nf-fg-heading:    #2d3138;   /* headings */
+  --nf-fg-muted:      #646b79;   /* secondary text, meta */
+  --nf-fg-subtle:     #6c757d;   /* eyebrow labels, ids, captions */
+  --nf-border:        #dee2e6;   /* hairline borders */
+  --nf-border-muted:  #e7eaf0;   /* form-element borders */
+  --nf-border-soft:   #e0e3e7;   /* list dividers */
+
+  /* ---------------------------------------------------------------------
+     PRIMARY — azure (links + primary buttons)
+     --------------------------------------------------------------------- */
+  --nf-primary:        #0172ad;
+  --nf-primary-hover:  #015887;
+  --nf-primary-fg:     #ffffff;
+
+  /* Button weights, by gravity of the action ----------------------------- */
+  --nf-btn-secondary:        #5d6b89;  /* slate — nav + commit ("Open") */
+  --nf-btn-secondary-hover:  #48536b;
+  --nf-btn-contrast:         #373c44;  /* near-black — heaviest human acts */
+  --nf-btn-contrast-hover:   #2d3138;
+
+  /* =====================================================================
+     SEMANTIC GOVERNANCE PALETTE  —  the heart of the brand.
+     Bootstrap-derived. Refine, never replace. Each meaning = fill + text
+     + border + (optional) 4px left-accent. Never colour-only: always paired
+     with a text label.
+     ===================================================================== */
+
+  /* 1 · PROPOSAL — uncommitted, editable AI draft (Invariant 1).
+        Grey + DASHED border + NO shadow, so it never looks settled. */
+  --nf-proposal-border:  #6c757d;   /* used as 2px DASHED */
+  --nf-proposal-bg:      #f8f9fa;
+  --nf-proposal-label:   #6c757d;
+
+  /* 2 · COMMITTED — the record of truth / append-only integrity.
+        SOLID green, in deliberate contrast to the dashed proposal. */
+  --nf-commit:           #198754;
+  --nf-commit-accent:    #28a745;   /* 4px left-border on committed cards */
+  --nf-commit-bg:        #f6fff8;
+  --nf-commit-bg-alt:    #f6fcf8;
+  --nf-commit-border:    #c3e6cb;
+  --nf-commit-border-alt:#badbcc;
+  --nf-commit-text:      #0f5132;
+  --nf-commit-attrib:    #1c7430;
+
+  /* 3 · SAFEGUARDING / RISK / ESCALATE — serious but CALM, never red-alert. */
+  --nf-risk:             #dc3545;   /* 4px left-accent */
+  --nf-risk-bg:          #fffafa;   /* barely-tinted risk card */
+  --nf-risk-bg-strong:   #f8d7da;   /* risk tag / badge fill */
+  --nf-risk-border:      #f5c2c7;
+  --nf-risk-text:        #842029;
+
+  /* 4 · OPTIONS / SEND / INFORMATIONAL — "no computer says no" (Invariant 3). */
+  --nf-info:             #0d6efd;   /* 4px left-accent on options/send */
+  --nf-info-bg:          #f7faff;
+  --nf-info-bg-strong:   #e7f1ff;   /* chip fill, "no-no" wash */
+  --nf-info-bg-cta:      #cfe2ff;   /* send badge fill */
+  --nf-info-border:      #b6d4fe;
+  --nf-info-text:        #084298;
+
+  /* 5 · SYNTHETIC / SURFACED-NOT-ACTED — the persistent banner + callout. */
+  --nf-synthetic-bg:     #fff3cd;
+  --nf-synthetic-text:   #664d03;
+  --nf-synthetic-border: #ffe69c;
+  --nf-synthetic-accent: #f0ad4e;   /* 4px left-accent on the callout */
+
+  /* DISCARD — neutral, low-emphasis disposition. */
+  --nf-discard:          #adb5bd;
+  --nf-discard-bg:       #e9ecef;
+  --nf-discard-text:     #495057;
+
+  /* ---------------------------------------------------------------------
+     SPACING — 0.25rem rhythm
+     --------------------------------------------------------------------- */
+  --nf-space-1: 0.25rem;
+  --nf-space-2: 0.5rem;
+  --nf-space-3: 0.75rem;
+  --nf-space-4: 1rem;
+  --nf-space-5: 1.5rem;
+  --nf-space-6: 2rem;
+  --nf-space-7: 3rem;
+
+  /* RADIUS — gently rounded; never pill on containers. */
+  --nf-radius-sm: 0.4rem;
+  --nf-radius:    0.5rem;
+  --nf-radius-pill: 0.5rem;   /* chips/badges use the same soft radius */
+
+  /* ELEVATION — minimal. Pico's faint card shadow at most. */
+  --nf-shadow-card: 0 1px 2px rgba(27, 31, 35, 0.04),
+                    0 1px 3px rgba(27, 31, 35, 0.06);
+  /* The proposal frame deliberately has NO shadow. */
+
+  --nf-border-width-accent: 4px;   /* the signature left-accent */
+}
+
+/* =========================================================================
+   SEMANTIC ELEMENT DEFAULTS — so plain HTML inherits the brand.
+   ========================================================================= */
+
+body {
+  font-family: var(--nf-font-sans);
+  font-size: var(--nf-text-base);
+  line-height: var(--nf-leading-normal);
+  color: var(--nf-fg);
+  background: var(--nf-bg-subtle);
+}
+
+h1, h2, h3, h4 {
+  color: var(--nf-fg-heading);
+  font-weight: var(--nf-weight-bold);
+  line-height: var(--nf-leading-tight);
+  letter-spacing: -0.01em;
+}
+h1 { font-size: var(--nf-text-3xl); }
+h2 { font-size: var(--nf-text-2xl); }
+h3 { font-size: var(--nf-text-xl); }
+h4 { font-size: var(--nf-text-lg); }
+
+a { color: var(--nf-primary); }
+a:hover { color: var(--nf-primary-hover); }
+
+code, kbd, samp, .nf-id {
+  font-family: var(--nf-font-mono);
+  font-size: 0.9em;
+}
+
+/* The ALL-CAPS eyebrow micro-label (the ONLY place caps appear). */
+.nf-eyebrow {
+  font-size: var(--nf-text-xs);
+  font-weight: var(--nf-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--nf-tracking-eyebrow);
+  color: var(--nf-fg-subtle);
+}
