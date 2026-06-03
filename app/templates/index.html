@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Caseload — Keyworker Workbench{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>Your caseload</h1>
+  <p>Three young people (synthetic). Open one to build pre-meeting context, draft notes, or review safeguarding signals — all as editable proposals you author and commit.</p>
+</hgroup>
+
+<div class="grid">
+  {% for p in personas %}
+  <article>
+    <header>
+      <strong>{{ p.name }}</strong>, {{ p.age }}
+      {% if p.synthetic %}<span class="tag-synthetic">synthetic</span>{% endif %}
+    </header>
+    <p>{{ p.summary_line }}</p>
+    <footer>
+      <small>{{ p.record_count }} source record(s){% if p.has_risk_indicator %} · <span class="tag-risk">safeguarding signal present</span>{% endif %}</small>
+      <br />
+      <a href="/context/{{ p.id }}" role="button" class="secondary">Open</a>
+    </footer>
+  </article>
+  {% endfor %}
+</div>
+
+<p><small>This caseload is the demo's starting point. Functionality is being built milestone by milestone — see the project's <code>missions.md</code>.</small></p>
+{% endblock %}

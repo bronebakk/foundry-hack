@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Northgate Futures — Keyworker Workbench{% endblock %}</title>
+  <!-- Pico.css (classless) from CDN: low bandwidth, zero build step (decision D-001) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <!-- HTMX for in-place interactivity without a SPA bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js"></script>
+  <link rel="stylesheet" href="/static/base.css" />
+</head>
+<body>
+  <!-- Persistent, unmissable synthetic-data marker (Invariant 3 / VAL-GOV-001) -->
+  <div class="synthetic-banner" role="note">
+    🧪 SYNTHETIC DEMO DATA — every persona and record here is entirely fictional. No real people, no real client data.
+  </div>
+
+  {% include "_nav.html" %}
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="container">
+    <small>
+      Keyworker Force-Multiplier — hackathon build. The AI <strong>proposes</strong>; the worker <strong>disposes</strong>.
+      Open-weight inference (gpt-oss-120b), self-hostable. Worker of record: {{ worker }}.
+    </small>
+  </footer>
+</body>
+</html>

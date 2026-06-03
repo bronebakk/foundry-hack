@@ -1,0 +1,39 @@
+{
+  "id": "leah-sumner",
+  "name": "Leah Sumner",
+  "age": 16,
+  "synthetic": true,
+  "demo_note": "Fictional persona — synthetic demo data only. Not a real person, no real records. The safeguarding indicator below is a fictional teaching example for the escalation demo.",
+  "summary_line": "16, persistently absent from school; recently more withdrawn; a safeguarding indicator is present in the records.",
+  "records": [
+    {
+      "id": "leah-r1",
+      "date": "2026-01-22",
+      "source": "Oakfield School — Education Welfare Officer",
+      "author": "P. Nkomo (EWO)",
+      "type": "ewo_note",
+      "text": "Attendance down to 41%. Mother reports Leah is often out in the evenings and vague about where. Bright but has 'checked out' of school. Home situation stretched; mum working nights.",
+      "risk_indicator": false
+    },
+    {
+      "id": "leah-r2",
+      "date": "2026-02-20",
+      "source": "Bridge Project (charity) — Drop-in note",
+      "author": "M. Adeyemi (Youth Worker)",
+      "type": "dropin_note",
+      "text": "Leah came to drop-in. Mentioned a new 'boyfriend' — said he is 24. He bought her a new phone and gives her money for taxis to his friend's flat a few towns over, where she's been staying some nights. Became guarded when asked about it and changed the subject. New trainers she couldn't explain.",
+      "risk_indicator": true,
+      "risk_category": "Possible child sexual / criminal exploitation (CSE/CCE)",
+      "risk_rationale": "16-year-old; significantly older male; gifts (phone, trainers); unexplained money; travel to and overnight stays at an unknown address — recognised indicators of exploitation. Surfaced for the worker's judgement; not acted on automatically."
+    },
+    {
+      "id": "leah-r3",
+      "date": "2026-02-28",
+      "source": "Bridge Project — Self-referral form (Leah's own words)",
+      "author": "Leah Sumner",
+      "type": "self_referral",
+      "text": "Wrote that she wants help finding a college course in hair and beauty for September but 'everyone treats me like a problem'. Asked if the youth worker she likes could be the one to help her.",
+      "risk_indicator": false
+    }
+  ]
+}

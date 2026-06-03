@@ -1,0 +1,46 @@
+{
+  "id": "amara-okafor",
+  "name": "Amara Okafor",
+  "age": 19,
+  "synthetic": true,
+  "demo_note": "Fictional persona — synthetic demo data only. Not a real person, no real records.",
+  "summary_line": "19, left a college course mid-year; anxiety is the main barrier; engagement comes and goes.",
+  "records": [
+    {
+      "id": "amara-r1",
+      "date": "2025-09-12",
+      "source": "Beechwood College — Pastoral Support",
+      "author": "J. Reilly (Pastoral Lead)",
+      "type": "pastoral_note",
+      "text": "Amara has missed 6 of the last 10 sessions on the Level 2 Health & Social Care course. When she does attend she engages well and her written work is strong. Says mornings are hard. Did not attend the wellbeing referral appointment we arranged.",
+      "risk_indicator": false
+    },
+    {
+      "id": "amara-r2",
+      "date": "2025-10-03",
+      "source": "NHS GP — Referral letter (copy on file)",
+      "author": "Dr S. Patel",
+      "type": "gp_referral",
+      "text": "Presented with generalised anxiety, worse in social/crowded settings. Sleep disrupted. Declined medication for now, open to talking therapy. Referred to IAPT; waiting list ~10 weeks.",
+      "risk_indicator": false
+    },
+    {
+      "id": "amara-r3",
+      "date": "2026-01-15",
+      "source": "Jobcentre Plus — Work Coach note",
+      "author": "T. Howells (Work Coach)",
+      "type": "work_coach_note",
+      "text": "Claimant attended. Course no longer active (left in Nov). Keen on 'something with people' but says she 'can't do interviews'. Agreed to look at part-time/flexible options. Marked as needing additional support.",
+      "risk_indicator": false
+    },
+    {
+      "id": "amara-r4",
+      "date": "2026-03-02",
+      "source": "Northgate Futures (charity) — Keyworker intake",
+      "author": "Sam Ellison (Keyworker)",
+      "type": "keyworker_note",
+      "text": "First meeting. Warm, funny, clearly bright. Very anxious about being 'behind'. Wants to work with younger kids or in care. The college note calls her 'disengaged' but that doesn't match who turned up today — she's keen, just frightened of being judged. Next: low-pressure volunteering taster, and chase the IAPT referral.",
+      "risk_indicator": false
+    }
+  ]
+}

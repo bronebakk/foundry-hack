@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Context — Keyworker Workbench{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>Pre-meeting context</h1>
+  <p>Choose a young person to build a synthesised brief from their records. <small>(AI synthesis arrives in milestone M3; for now this shows the underlying source records.)</small></p>
+</hgroup>
+<ul>
+  {% for p in personas %}
+  <li><a href="/context/{{ p.id }}">{{ p.name }}</a>, {{ p.age }} — {{ p.summary_line }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

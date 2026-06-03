@@ -1,0 +1,51 @@
+/* Minimal app-level styling on top of Pico.css. Stream-specific styles live in
+   their own namespaced files (context.css / drafting.css / escalation.css). */
+
+.synthetic-banner {
+  background: #fff3cd;
+  color: #664d03;
+  border-bottom: 2px solid #ffe69c;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+}
+
+.tag-synthetic {
+  display: inline-block;
+  background: #e7f1ff;
+  color: #084298;
+  border: 1px solid #b6d4fe;
+  border-radius: 0.5rem;
+  padding: 0 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.tag-risk {
+  display: inline-block;
+  background: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+  border-radius: 0.5rem;
+  padding: 0 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* A clear, consistent "this is an uncommitted AI proposal" frame the streams reuse. */
+.proposal {
+  border: 2px dashed #6c757d;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+}
+
+.proposal-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+}

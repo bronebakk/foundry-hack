@@ -1,0 +1,46 @@
+{
+  "id": "kofi-mensah",
+  "name": "Kofi Mensah",
+  "age": 17,
+  "synthetic": true,
+  "demo_note": "Fictional persona — synthetic demo data only. Not a real person, no real records.",
+  "summary_line": "17, care-experienced; strong interest in trades; misses appointments but turns up for hands-on work.",
+  "records": [
+    {
+      "id": "kofi-r1",
+      "date": "2025-11-20",
+      "source": "Leaving Care Team — Personal Adviser note",
+      "author": "D. Whitfield (PA)",
+      "type": "leaving_care_note",
+      "text": "Kofi moved to semi-independent accommodation in October. Settling unevenly. Disengaged from the last two formal review meetings — does not respond well to office settings or paperwork. Pathway plan target: education/training by spring.",
+      "risk_indicator": false
+    },
+    {
+      "id": "kofi-r2",
+      "date": "2026-01-09",
+      "source": "Northgate Futures (charity) — Keyworker note",
+      "author": "Sam Ellison (Keyworker)",
+      "type": "keyworker_note",
+      "text": "Met Kofi at the workshop rather than the office — completely different person there. Confident, good with his hands, asked sharp questions about apprenticeships. Hates being 'talked at'. Phone is often out of credit so texts don't always land; WhatsApp works better.",
+      "risk_indicator": false
+    },
+    {
+      "id": "kofi-r3",
+      "date": "2026-02-14",
+      "source": "Riverside Joinery — Taster placement feedback",
+      "author": "G. Obi (Supervisor)",
+      "type": "employer_feedback",
+      "text": "Two-day taster. Punctual both days, polite, picked things up fast. Would consider him for an apprenticeship if he can get his Level 1 maths. One no-show the following week with no message.",
+      "risk_indicator": false
+    },
+    {
+      "id": "kofi-r4",
+      "date": "2026-02-15",
+      "source": "Northgate Futures — Contact log",
+      "author": "system",
+      "type": "contact_log",
+      "text": "Missed scheduled call (3rd missed appointment this quarter). Re-contacted via WhatsApp same day — replied within the hour, apologised, said he forgot.",
+      "risk_indicator": false
+    }
+  ]
+}

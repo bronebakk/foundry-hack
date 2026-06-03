@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} — Keyworker Workbench{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>{{ heading }}</h1>
+  <p>{{ blurb }}</p>
+</hgroup>
+<article class="proposal">
+  <span class="proposal-label">Scaffold — built in {{ milestone }}</span>
+  <p>This surface is registered and routed. Its functionality is delivered in mission {{ milestone }}.</p>
+</article>
+<p><a href="/" role="button" class="secondary">← Back to caseload</a></p>
+{% endblock %}
