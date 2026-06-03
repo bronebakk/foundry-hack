@@ -75,29 +75,32 @@
 {% if aspiration_record %}
 <section class="esc-options">
   <h2>Opportunities &amp; options</h2>
-  <p class="esc-source-meta"><small>{{ persona.name }} asked about this in her own words —
+  <p class="esc-source-meta"><small>{{ persona.name }} asked about this in their own words —
     record <code>{{ aspiration_record.id }}</code> ({{ aspiration_record.date }}):</small></p>
   <blockquote>{{ aspiration_record.text }}</blockquote>
 
   <article class="esc-option">
-    <p><strong>Hair &amp; Beauty (Level 2), Northgate College — September intake.</strong>
-       This intake is currently <em>full</em>, and the application window has closed.</p>
-
     <p class="esc-no-no"><strong>The system isn't telling {{ persona.name }} “no”.</strong>
-       It can't — and it won't. A person owns this decision and delivers it with a reason and
-       a real alternative. What we can offer instead:</p>
-    <ul>
-      <li>A place on the <strong>January roll-on intake</strong> of the same course.</li>
-      <li>The equivalent Level 2 course at <strong>Riverside College</strong>, still open.</li>
-      <li>A <strong>taster day</strong> in the meantime so the time isn't lost.</li>
-    </ul>
+       It can't — and it won't. Where an option isn't open on its usual route, a person owns that
+       decision and delivers it with a reason and a real alternative — never a machine refusal.</p>
+
+    {% if support_notes %}
+    <p><strong>Routes already noted on file</strong> for a keyworker to work through with
+       {{ persona.name }} — nothing here is closed off automatically:</p>
+    {% for n in support_notes %}
+    <blockquote><small>{{ n.source }} · {{ n.date }}</small><br />{{ n.text }}</blockquote>
+    {% endfor %}
+    {% else %}
+    <p>A keyworker reviews the open routes and alternatives with {{ persona.name }} — see the full
+       <a href="/context/{{ persona.id }}">case records</a>. Nothing is closed off automatically.</p>
+    {% endif %}
 
     <form method="post" action="/escalation/{{ persona.id }}/refer">
       <input type="hidden" name="context_text"
-             value="{{ persona.name }} asked (own words) about a Hair &amp; Beauty Level 2 place for September; that intake is full / window closed. Alternatives: January roll-on, Riverside College equivalent, taster day." />
+             value="{{ persona.name }} asked (own words) about an option that isn't open on its usual route. Routing the decision to a keyworker to review the alternatives on file and come back with a route and a reason." />
       <label>
         Hand this to a keyworker to decide and deliver (edit freely — your words):
-        <textarea name="final_text" rows="3">Please review {{ persona.name }}'s options for the Hair &amp; Beauty course and get back to her with a decision and an alternative she can take up. She specifically asked to work with the youth worker she trusts.</textarea>
+        <textarea name="final_text" rows="3">Please review {{ persona.name }}'s options and come back to them with a route they can take up and a real alternative — they specifically don't want to just be told “no”.</textarea>
       </label>
       <button type="submit" class="contrast">Send to a keyworker to decide</button>
     </form>

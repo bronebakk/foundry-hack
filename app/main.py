@@ -1,5 +1,10 @@
-"""FastAPI app entrypoint. Frozen after M1: registers all routers (including the M3–M5
-stream stubs) so parallel streams fill in their own files and never edit this one."""
+"""FastAPI app entrypoint. Frozen after M1 for the parallel streams; the M6 integration
+step (the sanctioned place for frozen-file edits) added the import-time ``init_db()`` below.
+
+Registers all routers. Once the streams landed, several surfaces read the decision log in
+GET handlers (escalation overview/inbox, the M6 governance viewer). The append-only table
+must therefore exist before any request — not only after the ASGI ``lifespan`` startup, which
+e.g. a module-level ``TestClient(app)`` never triggers. See decisions.md D-005."""
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
@@ -21,6 +26,11 @@ async def lifespan(app: FastAPI):
     init_db()  # idempotent: creates the append-only decision_log + triggers
     yield
 
+
+# Defence in depth: the decision_log table must exist before the first request, since GET
+# handlers now read it. init_db() is idempotent (CREATE TABLE IF NOT EXISTS), so calling it
+# here as well as in lifespan is safe; per-test temp DBs re-init their own via fixtures.
+init_db()
 
 app = FastAPI(title="Keyworker Force-Multiplier", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=str(config.APP_DIR / "static")), name="static")

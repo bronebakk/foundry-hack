@@ -145,12 +145,16 @@ def escalation_persona(request: Request, persona_id: str):
         )
         risk_items.append({"record": record, "proposal": proposal})
 
-    # The "no computer says no" surface: an option the young person asked about that can't
-    # currently proceed. We never refuse on the machine's authority — we show context +
-    # alternatives + a human-delivered path. Tie it to Leah's own-words self-referral if present.
+    # The "no computer says no" surface: an option the young person asked about (their own words
+    # in a self-referral) that can't currently proceed on its usual route. We never refuse on the
+    # machine's authority — we show their ask + the routes already noted on file + a human-delivered
+    # path. Data-driven per persona (M6): the alternatives come from the records, never hardcoded,
+    # so this reads correctly for whoever it surfaces (e.g. Leah's course, Marcus's funded place).
     aspiration_record = next(
         (r for r in persona.records if r.type == "self_referral"), None
     )
+    support_types = {"admissions_note", "work_coach_note", "keyworker_note"}
+    support_notes = [r for r in persona.records if r.type in support_types]
 
     return render(
         request,
@@ -159,6 +163,7 @@ def escalation_persona(request: Request, persona_id: str):
         risk_items=risk_items,
         ai_available=provider.configured,
         aspiration_record=aspiration_record,
+        support_notes=support_notes,
     )
 
 

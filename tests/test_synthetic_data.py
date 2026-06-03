@@ -76,9 +76,9 @@ def test_gate_rejects_empty_record_text():
     assert has_errors(validate_persona_dict(bad))
 
 
-# --- Every shipped persona (live + staged hero) passes the gate ---
+# --- Every shipped persona passes the gate (hero personas promoted to live at M6, D-005) ---
 
-@pytest.mark.parametrize("folder", ["app/data/personas", "app/data/personas_staged"])
+@pytest.mark.parametrize("folder", ["app/data/personas"])
 def test_all_curated_personas_pass_the_gate(folder):
     files = sorted((REPO / folder).glob("*.json"))
     assert files, f"no personas found in {folder}"
@@ -132,16 +132,16 @@ def test_committed_fixtures_exist_and_pass_the_gate():
         assert not has_errors(validate_persona_dict(json.loads(f.read_text(encoding="utf-8"))))
 
 
-# --- Staged hero personas cover the demo's surface gaps ---
+# --- Hero personas (promoted to live at M6, D-005) cover the demo's surface gaps ---
 
-def test_staged_personas_cover_draft_deny_and_risk_variety():
-    staged = {f.stem: json.loads(f.read_text(encoding="utf-8"))
-              for f in (REPO / "app/data/personas_staged").glob("*.json")}
+def test_hero_personas_cover_draft_deny_and_risk_variety():
+    live = {f.stem: json.loads(f.read_text(encoding="utf-8"))
+            for f in (REPO / "app/data/personas").glob("*.json")}
     # DRAFT: a 'meeting just held' capture to write up.
     assert any(r["type"] == "meeting_capture"
-               for p in staged.values() for r in p["records"]), "no DRAFT meeting-capture scenario"
+               for p in live.values() for r in p["records"]), "no DRAFT meeting-capture scenario"
     # ESCALATE variety: a risk category distinct from the existing CSE/CCE example.
-    risk_cats = {r.get("risk_category") for p in staged.values() for r in p["records"] if r.get("risk_indicator")}
+    risk_cats = {r.get("risk_category") for p in live.values() for r in p["records"] if r.get("risk_indicator")}
     assert any("self-harm" in (c or "").lower() for c in risk_cats), "no distinct risk-category persona"
     # DENY: the marcus persona sets up an 'option unavailable, route to human' scenario.
-    assert "marcus-fielding" in staged
+    assert "marcus-fielding" in live

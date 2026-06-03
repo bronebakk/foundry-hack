@@ -161,8 +161,9 @@ def test_deny_surface_has_no_machine_refusal_and_offers_alternative_and_human_pa
     # no machine-authored refusal anywhere
     for refusal in ("application denied", "not eligible", "request rejected", "access denied"):
         assert refusal not in low
-    # it DOES offer an alternative and a human-delivered path
-    assert "January roll-on" in body or "Riverside College" in body
+    # it surfaces the no-machine-"no" framing and a human-delivered path (alternatives are
+    # data-driven from the records / delivered by the keyworker — see M6 test for Marcus).
+    assert "isn't telling" in body  # explicit "the system isn't telling <name> 'no'"
     assert "Send to a keyworker to decide" in body
 
 

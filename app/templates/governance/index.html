@@ -1,14 +1,88 @@
 {% extends "base.html" %}
-{% block title %}{{ heading }} — Keyworker Workbench{% endblock %}
+{% block title %}Decision log — Keyworker Workbench{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="/static/governance.css" />
+
 <hgroup>
-  <h1>{{ heading }}</h1>
-  <p>{{ blurb }}</p>
+  <h1>Decision log</h1>
+  <p>Every AI proposal a worker acted on — the <strong>AI's proposal</strong>, the
+  <strong>human's disposition</strong>, and the <strong>worker of record</strong> — in an
+  append-only log that cannot be silently altered.</p>
 </hgroup>
+
+<!-- Append-only is the whole point: state it, and notice there is no edit/delete control anywhere. -->
+<div class="gov-immutable" role="note">
+  🔒 <strong>Append-only.</strong> Entries can be added but never edited or deleted — enforced at
+  the database layer (UPDATE/DELETE are rejected by triggers) and the service layer (no mutation
+  API exists). This page is read-only by construction; there is no edit or delete control to find.
+</div>
+
+<!-- Inference provenance (VAL-GOV-002): open-weight only, swap by config. -->
+<details class="gov-inference">
+  <summary>Inference provenance — open-weight only, self-hostable</summary>
+  <ul>
+    <li>Models in the path (allowlisted; anything else is refused before any network call):
+      {% for m in inference.allowed_models %}<code>{{ m }}</code>{% if not loop.last %}, {% endif %}{% endfor %}</li>
+    <li>Primary: <code>{{ inference.primary_model }}</code> — no closed/proprietary model can enter the path.</li>
+    <li>Single swap point to sovereign infra: base URL <code>{{ inference.base_url }}</code>
+      (set <code>OPENROUTER_BASE_URL</code> + key — no code change).</li>
+    <li>Live key configured: {{ "yes" if inference.configured else "no (offline; drafts degrade gracefully)" }}</li>
+  </ul>
+</details>
+
+<nav class="gov-filter" aria-label="Filter the log by young person">
+  <small>Filter:</small>
+  <a href="/governance/" role="button" class="{{ '' if active_persona else 'contrast' }} outline">All</a>
+  {% for p in personas %}
+  <a href="/governance/?persona_id={{ p.id }}" role="button"
+     class="{{ 'contrast' if active_persona == p.id else '' }} outline">{{ p.name }}</a>
+  {% endfor %}
+</nav>
+
+<p><small>{{ total }} entr{{ 'y' if total == 1 else 'ies' }}{% if active_persona %} for this young person{% endif %} · newest first.</small></p>
+
+{% if rows %}
+<div class="gov-log">
+  {% for r in rows %}
+  {% set e = r.e %}
+  <article class="gov-entry gov-{{ e.disposition }}">
+    <header class="gov-entry-head">
+      <span class="gov-id">#{{ e.id }}</span>
+      <span class="gov-badge gov-badge-{{ e.disposition }}">{{ e.disposition }}</span>
+      <span class="gov-when"><small>{{ e.created_at }}</small></span>
+    </header>
+    <p class="gov-meta"><small>
+      {{ r.persona_name }} · surface: {{ e.surface }}{% if e.proposal_type %} · {{ e.proposal_type }}{% endif %}
+    </small></p>
+
+    {# AI proposal — exactly as generated, preserved verbatim. #}
+    {% if e.proposal_text %}
+    <div class="gov-proposal">
+      <span class="gov-label">⬩ AI proposed</span>
+      {% if e.model %}<small class="gov-model">open-weight: {{ e.model }}</small>{% endif %}
+      <blockquote>{{ e.proposal_text }}</blockquote>
+    </div>
+    {% endif %}
+
+    {# Human disposition + attribution — the worker is always the author of record. #}
+    <div class="gov-disposition">
+      <span class="gov-arrow">→</span>
+      <strong>{{ e.author }}</strong> {{ r.disposition_label }}.
+    </div>
+    {% if e.final_text %}
+    <blockquote class="gov-final">{{ e.final_text }}</blockquote>
+    {% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% else %}
 <article class="proposal">
-  <span class="proposal-label">Scaffold — built in {{ milestone }}</span>
-  <p>This surface is registered and routed. Its functionality is delivered in mission {{ milestone }}.
-     The underlying append-only <code>decision_log</code> table and its anti-tamper triggers already exist (M1).</p>
+  <p>No decisions logged yet{% if active_persona %} for this young person{% endif %}. The log fills
+  as workers act on AI proposals — committing an edited note, sending a follow-up, escalating a
+  concern, or discarding a draft. Generating a proposal alone never writes here; only an explicit
+  human disposition does.</p>
 </article>
-<p><a href="/" role="button" class="secondary">← Back to caseload</a></p>
+{% endif %}
+
+<p><a href="/" class="secondary">← Back to caseload</a></p>
 {% endblock %}
