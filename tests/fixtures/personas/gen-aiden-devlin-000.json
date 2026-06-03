@@ -1,0 +1,39 @@
+{
+  "id": "gen-aiden-devlin-000",
+  "name": "Aiden Devlin",
+  "age": 16,
+  "synthetic": true,
+  "demo_note": "Auto-generated fictional persona — synthetic test data only. Not a real person; no real records.",
+  "summary_line": "16, left education early; anxiety the main barrier; engages warmly when it's low-pressure.",
+  "records": [
+    {
+      "id": "gen-aiden-devlin-000-r1",
+      "date": "2026-01-06",
+      "source": "College — Pastoral Support",
+      "author": "A. Marsh",
+      "type": "pastoral_note",
+      "text": "Attendance patchy on the Level 2 course; strong work when present. Says mornings and crowded rooms are hard.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-aiden-devlin-000-r2",
+      "date": "2026-02-13",
+      "source": "NHS GP — Referral letter (copy on file)",
+      "author": "P. Nkomo",
+      "type": "gp_referral",
+      "text": "Generalised anxiety, worse in social settings. Open to talking therapy; referred to IAPT, ~10 week wait.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-aiden-devlin-000-r3",
+      "date": "2026-03-20",
+      "source": "Northgate Futures (charity) — Keyworker intake",
+      "author": "S. Ellison (Keyworker)",
+      "type": "keyworker_note",
+      "text": "Warm and bright in person; very anxious about being 'behind'. The 'disengaged' label doesn't match who turned up. Next: low-pressure volunteering taster.",
+      "risk_indicator": true,
+      "risk_category": "Possible child criminal exploitation (CCE)",
+      "risk_rationale": "Unexplained money and a new phone; travelling to an unfamiliar address to 'hold things' for an older associate — recognised indicators. Surfaced for the worker's judgement; not acted on automatically."
+    }
+  ]
+}

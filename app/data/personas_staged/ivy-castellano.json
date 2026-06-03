@@ -1,0 +1,39 @@
+{
+  "id": "ivy-castellano",
+  "name": "Ivy Castellano",
+  "age": 16,
+  "synthetic": true,
+  "demo_note": "Fictional persona — synthetic demo data only. Not a real person, no real records. The wellbeing indicator below is a fictional teaching example for the escalation demo (a different risk category to the exploitation example), to show the human-owned escalation path. Handled deliberately non-graphically.",
+  "summary_line": "16, recently much more withdrawn; dropped the activities she used to love; a wellbeing/low-mood indicator is present in the records.",
+  "records": [
+    {
+      "id": "ivy-r1",
+      "date": "2026-01-18",
+      "source": "Hartcliffe Academy — Pastoral / Counsellor note",
+      "author": "L. Bryce (Pastoral)",
+      "type": "pastoral_note",
+      "text": "Ivy has become noticeably quieter this term and stopped attending art club, which she used to lead. Grades slipping. Teachers describe her as 'somewhere else'. No concerns raised at home that we're aware of.",
+      "risk_indicator": false
+    },
+    {
+      "id": "ivy-r2",
+      "date": "2026-02-26",
+      "source": "Northgate Futures (charity) — Drop-in note",
+      "author": "M. Adeyemi (Youth Worker)",
+      "type": "dropin_note",
+      "text": "Ivy stayed back after drop-in. Said she's been feeling 'numb' and 'not really bothered about anything' for a while, and mentioned in passing some old marks on her arm before changing the subject. Didn't want to say more today and asked me not to 'make it a big thing'. I listened, didn't push, and let her know I'm here.",
+      "risk_indicator": true,
+      "risk_category": "Low mood / possible self-harm",
+      "risk_rationale": "Sustained low mood and loss of interest, plus a passing reference to self-harm. Recognised wellbeing indicators warranting a sensitive, worker-led follow-up and a safeguarding conversation. Surfaced for the worker's judgement and human-owned escalation — not acted on automatically and not raised over her head."
+    },
+    {
+      "id": "ivy-r3",
+      "date": "2026-02-28",
+      "source": "Northgate Futures — Self-referral form (Ivy's own words)",
+      "author": "Ivy Castellano",
+      "type": "self_referral",
+      "text": "Wrote: 'Can I keep talking to the youth worker I met? She didn't make it weird. I don't really want loads of new people involved all at once.'",
+      "risk_indicator": false
+    }
+  ]
+}

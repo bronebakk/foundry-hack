@@ -1,0 +1,39 @@
+{
+  "id": "gen-iris-thorne-008",
+  "name": "Iris Thorne",
+  "age": 24,
+  "synthetic": true,
+  "demo_note": "Auto-generated fictional persona — synthetic test data only. Not a real person; no real records.",
+  "summary_line": "24, young carer; limited availability; motivated but time-poor and easily overcommitted.",
+  "records": [
+    {
+      "id": "gen-iris-thorne-008-r1",
+      "date": "2026-03-06",
+      "source": "School — Education Welfare Officer",
+      "author": "A. Marsh",
+      "type": "ewo_note",
+      "text": "Frequent lateness tied to caring for a younger sibling before school. Bright; teachers describe as reliable when there.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-iris-thorne-008-r2",
+      "date": "2026-04-13",
+      "source": "Jobcentre Plus — Work Coach note",
+      "author": "P. Nkomo",
+      "type": "work_coach_note",
+      "text": "Keen on part-time work that fits around home. Worried about losing flexibility. Marked as needing additional support.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-iris-thorne-008-r3",
+      "date": "2026-05-20",
+      "source": "Northgate Futures — Keyworker note",
+      "author": "S. Ellison (Keyworker)",
+      "type": "keyworker_note",
+      "text": "Clear about wanting childcare or healthcare work. Needs hours that flex around caring; a rigid timetable will lose them.",
+      "risk_indicator": true,
+      "risk_category": "Possible mate-crime / financial exploitation",
+      "risk_rationale": "An older 'friend' is holding their bank card and 'helping' with benefits; reports having no money days after payment. A safeguarding cue for the worker — surfaced for judgement, no automatic action."
+    }
+  ]
+}

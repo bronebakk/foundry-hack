@@ -1,0 +1,32 @@
+{
+  "id": "gen-edge-multi-risk",
+  "name": "Multi Risk",
+  "age": 18,
+  "synthetic": true,
+  "demo_note": "Auto-generated EDGE-CASE fixture — synthetic test data only.",
+  "summary_line": "edge-case fixture",
+  "records": [
+    {
+      "id": "edge-r1",
+      "date": "2026-03-01",
+      "source": "Test Source",
+      "author": "system",
+      "type": "test_note",
+      "text": "First flagged concern.",
+      "risk_indicator": true,
+      "risk_category": "Possible child criminal exploitation (CCE)",
+      "risk_rationale": "Unexplained money and a new phone; travelling to an unfamiliar address to 'hold things' for an older associate — recognised indicators. Surfaced for the worker's judgement; not acted on automatically."
+    },
+    {
+      "id": "edge-r2",
+      "date": "2026-03-01",
+      "source": "Test Source",
+      "author": "system",
+      "type": "test_note",
+      "text": "Second, different concern.",
+      "risk_indicator": true,
+      "risk_category": "Possible mate-crime / financial exploitation",
+      "risk_rationale": "An older 'friend' is holding their bank card and 'helping' with benefits; reports having no money days after payment. A safeguarding cue for the worker — surfaced for judgement, no automatic action."
+    }
+  ]
+}

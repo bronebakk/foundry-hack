@@ -1,0 +1,37 @@
+{
+  "id": "gen-liam-ashby-011",
+  "name": "Liam Ashby",
+  "age": 18,
+  "synthetic": true,
+  "demo_note": "Auto-generated fictional persona — synthetic test data only. Not a real person; no real records.",
+  "summary_line": "18, patchy phone/data access makes contact unreliable; keen but easy to lose between appointments.",
+  "records": [
+    {
+      "id": "gen-liam-ashby-011-r1",
+      "date": "2026-06-06",
+      "source": "Northgate Futures — Contact log",
+      "author": "A. Marsh",
+      "type": "contact_log",
+      "text": "Texts often don't land — phone frequently out of credit. WhatsApp on free wifi works best for reaching them.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-liam-ashby-011-r2",
+      "date": "2026-07-13",
+      "source": "Jobcentre Plus — Work Coach note",
+      "author": "P. Nkomo",
+      "type": "work_coach_note",
+      "text": "Online job-search commitments hard to meet without reliable data. Agreed to use the centre's computers weekly.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-liam-ashby-011-r3",
+      "date": "2026-08-20",
+      "source": "Keyworker note",
+      "author": "S. Ellison (Keyworker)",
+      "type": "keyworker_note",
+      "text": "Not avoidant — just hard to reach. Motivated about warehouse/logistics work. Needs a contact plan that assumes patchy signal.",
+      "risk_indicator": false
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "gen-dion-ellison-003",
+  "name": "Dion Ellison",
+  "age": 19,
+  "synthetic": true,
+  "demo_note": "Auto-generated fictional persona — synthetic test data only. Not a real person; no real records.",
+  "summary_line": "19, recent housing disruption; engagement interrupted by moves; wants stability before training.",
+  "records": [
+    {
+      "id": "gen-dion-ellison-003-r1",
+      "date": "2026-04-06",
+      "source": "Housing Options — Caseworker note",
+      "author": "A. Marsh",
+      "type": "housing_note",
+      "text": "Sofa-surfing after a family breakdown; temporary accommodation secured. Address has changed twice this term.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-dion-ellison-003-r2",
+      "date": "2026-05-13",
+      "source": "Northgate Futures — Keyworker intake",
+      "author": "P. Nkomo",
+      "type": "keyworker_note",
+      "text": "Hard to reach during the moves; not disengaged, just displaced. Wants to sort housing before committing to a course.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-dion-ellison-003-r3",
+      "date": "2026-06-20",
+      "source": "Self-referral form (own words)",
+      "author": "S. Ellison (Keyworker)",
+      "type": "self_referral",
+      "text": "Wrote: 'I want to get back into college once I know where I'm living. I'm not lazy, things have just been everywhere.'",
+      "risk_indicator": false
+    }
+  ]
+}

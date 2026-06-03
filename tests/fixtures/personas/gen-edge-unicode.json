@@ -1,0 +1,19 @@
+{
+  "id": "gen-edge-unicode",
+  "name": "Ünïcödé Náme — 日本語",
+  "age": 18,
+  "synthetic": true,
+  "demo_note": "Auto-generated EDGE-CASE fixture — synthetic test data only.",
+  "summary_line": "edge-case fixture",
+  "records": [
+    {
+      "id": "edge-r1",
+      "date": "2026-03-01",
+      "source": "Test Source",
+      "author": "system",
+      "type": "test_note",
+      "text": "Record with açcented chars, emoji 🧪, and 日本語 to test rendering/escaping.",
+      "risk_indicator": false
+    }
+  ]
+}

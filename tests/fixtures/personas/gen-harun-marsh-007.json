@@ -1,0 +1,37 @@
+{
+  "id": "gen-harun-marsh-007",
+  "name": "Harun Marsh",
+  "age": 23,
+  "synthetic": true,
+  "demo_note": "Auto-generated fictional persona — synthetic test data only. Not a real person; no real records.",
+  "summary_line": "23, care-experienced; thrives in practical settings; misses office appointments but turns up for real work.",
+  "records": [
+    {
+      "id": "gen-harun-marsh-007-r1",
+      "date": "2026-02-06",
+      "source": "Leaving Care Team — Personal Adviser note",
+      "author": "A. Marsh",
+      "type": "leaving_care_note",
+      "text": "Moved to semi-independent accommodation; settling unevenly. Disengages from formal review meetings and paperwork.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-harun-marsh-007-r2",
+      "date": "2026-03-13",
+      "source": "Riverside trades — Taster placement feedback",
+      "author": "P. Nkomo",
+      "type": "employer_feedback",
+      "text": "Punctual, polite, picks things up fast. Would consider an apprenticeship with a Level 1 maths pass. One no-show with no message.",
+      "risk_indicator": false
+    },
+    {
+      "id": "gen-harun-marsh-007-r3",
+      "date": "2026-04-20",
+      "source": "Northgate Futures — Contact log",
+      "author": "S. Ellison (Keyworker)",
+      "type": "contact_log",
+      "text": "Missed a scheduled call; re-contacted via WhatsApp and replied within the hour, apologised, said he forgot.",
+      "risk_indicator": false
+    }
+  ]
+}

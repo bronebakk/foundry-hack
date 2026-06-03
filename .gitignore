@@ -2,6 +2,7 @@
 .env
 .env.*
 *.key
+orkey.txt
 
 # Python
 __pycache__/
