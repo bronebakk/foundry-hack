@@ -1,0 +1,36 @@
+{#
+  The per-persona record of truth. Proves VAL-PROPOSE-001/002: until an explicit human
+  action, generation has produced NOTHING here. Expects `committed` and `sent` lists of
+  DecisionLogEntry (newest first), and `persona`.
+#}
+<div class="grid">
+  <article class="ledger">
+    <header><strong>Committed case notes</strong> <small>({{ committed|length }})</small></header>
+    {% if committed %}
+      {% for e in committed %}
+      <article class="ledger-entry">
+        <small class="ledger-attrib">✓ Committed by {{ e.author }} · {{ e.created_at }}</small>
+        <p>{{ e.final_text }}</p>
+      </article>
+      {% endfor %}
+    {% else %}
+      <p><small>No committed notes yet. Drafting alone never writes here — only your explicit “Commit”.</small></p>
+    {% endif %}
+  </article>
+
+  <article class="ledger">
+    <header><strong>Sent messages</strong> <small>({{ sent|length }})</small></header>
+    {% if sent %}
+      {% for e in sent %}
+      <article class="ledger-entry">
+        <small class="ledger-attrib">➤ Sent by {{ e.author }} · {{ e.created_at }}</small>
+        <p>{{ e.final_text }}</p>
+      </article>
+      {% endfor %}
+    {% else %}
+      <p><small>Nothing sent. A follow-up stays a draft until you explicitly press “Send”.</small></p>
+    {% endif %}
+  </article>
+</div>
+<p><small>Every entry above is also in the immutable <a href="/governance/">decision log</a>,
+   alongside the original AI proposal it came from.</small></p>

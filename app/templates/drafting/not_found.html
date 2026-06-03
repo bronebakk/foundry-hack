@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not found — Keyworker Workbench{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>No such persona</h1>
+  <p>There is no persona <code>{{ persona_id }}</code> in the synthetic caseload.</p>
+</hgroup>
+<p><a href="/drafting/" role="button" class="secondary">← All personas</a></p>
+{% endblock %}

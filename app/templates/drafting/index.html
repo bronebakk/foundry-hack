@@ -1,13 +1,25 @@
 {% extends "base.html" %}
-{% block title %}{{ heading }} — Keyworker Workbench{% endblock %}
+{% block title %}Drafting — Keyworker Workbench{% endblock %}
 {% block content %}
 <hgroup>
-  <h1>{{ heading }}</h1>
-  <p>{{ blurb }}</p>
+  <h1>Drafting</h1>
+  <p>Case notes and follow-up messages in your own voice. Every output is an editable draft
+     <strong>you</strong> author and commit — nothing is saved or sent automatically.</p>
 </hgroup>
-<article class="proposal">
-  <span class="proposal-label">Scaffold — built in {{ milestone }}</span>
-  <p>This surface is registered and routed. Its functionality is delivered in mission {{ milestone }}.</p>
-</article>
+
+<p>Pick a young person to draft for:</p>
+<div class="grid">
+  {% for p in personas %}
+  <article>
+    <header>
+      <strong>{{ p.name }}</strong> <span class="tag-synthetic">synthetic</span>
+      {% if p.has_risk_indicator %}<span class="tag-risk">safeguarding signal</span>{% endif %}
+    </header>
+    <p><small>{{ p.summary_line }}</small></p>
+    <a href="/drafting/{{ p.id }}" role="button">Draft for {{ p.name.split()[0] }} →</a>
+  </article>
+  {% endfor %}
+</div>
+
 <p><a href="/" role="button" class="secondary">← Back to caseload</a></p>
 {% endblock %}
