@@ -18,9 +18,9 @@ from __future__ import annotations
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse
 
-from app import config
+from app import config, ratelimit
 from app.models import Disposition, Proposal, ProposalType, Surface
-from app.services import data, decision_log
+from app.services import data, decision_log, integrity, safety
 from app.services.inference import InferenceError, provider
 from app.templating import render
 
@@ -67,11 +67,12 @@ _DRAFT_KINDS = {
 
 
 def _persona_context(persona) -> str:
-    """The (synthetic) source material the draft draws from — fed to the model verbatim."""
-    lines = [f"Young person: {persona.name}, age {persona.age}.", f"Summary: {persona.summary_line}", "", "Records on file:"]
-    for r in persona.records:
-        lines.append(f"- [{r.date}] {r.source} ({r.author}): {r.text}")
-    return "\n".join(lines)
+    """The (synthetic) source material the draft draws from. Record text is third-party free text
+    (attacker-influenceable in production), so it is wrapped in an untrusted-data fence with an
+    explicit instruction/data separation (A05 / LLM01)."""
+    header = f"Young person: {persona.name}, age {persona.age}.\nSummary: {persona.summary_line}"
+    records = "\n".join(f"- [{r.date}] {r.source} ({r.author}): {r.text}" for r in persona.records)
+    return f"{header}\n\nRecords on file:\n{safety.fence(records)}"
 
 
 def _canned_draft(persona, kind: ProposalType, meeting_notes: str) -> str:
@@ -140,6 +141,15 @@ def generate_draft(
     if persona is None:
         return render(request, "drafting/not_found.html", persona_id=persona_id)
 
+    # Bound LLM cost / DoS (A06 / LLM10): cap generations per client.
+    client_key = request.client.host if request.client else "anon"
+    if not ratelimit.allow(f"generate:{client_key}"):
+        return HTMLResponse(
+            '<p class="muted" role="alert">Too many drafts in a short time — please wait a moment '
+            "and try again.</p>",
+            status_code=429,
+        )
+
     try:
         kind = ProposalType(proposal_type)
     except ValueError:
@@ -154,7 +164,9 @@ def generate_draft(
         if kind is ProposalType.CASE_NOTE and meeting_notes.strip():
             prompt += f"\n\nWorker's notes from the meeting just held:\n{meeting_notes.strip()}"
         try:
-            completion = provider.complete(prompt, system=cfg["system"], temperature=0.4, max_tokens=500)
+            completion = provider.complete(
+                prompt, system=cfg["system"] + " " + safety.FENCE_INSTRUCTION,
+                temperature=0.4, max_tokens=500)
             draft_text, model = completion.text.strip(), completion.model
         except InferenceError as exc:  # configured but the call failed — degrade, don't 500
             draft_text = _canned_draft(persona, kind, meeting_notes)
@@ -175,14 +187,22 @@ def generate_draft(
         proposal_text=draft_text,
         model=model,
     )
+    # Sign the provenance so the disposition can't be forged (A08).
+    proposal_sig = integrity.sign(integrity.provenance(
+        persona_id, Surface.DRAFTING.value, kind.value, model, draft_text))
+    # Denial-language guard (Invariant 2): flag a draft that carries a refusal, so the worker is
+    # warned before they choose to send/commit. Never blocks — the human still disposes.
+    denial = safety.denial_phrases(draft_text)
     return render(
         request,
         "drafting/_draft.html",
         proposal=proposal,
+        proposal_sig=proposal_sig,
         action_url=f"/drafting/{persona_id}/dispose",
         actions=cfg["actions"],
         proposal_type_label=cfg["label"],
         inference_note=inference_note,
+        denial_phrases=denial,
     )
 
 
@@ -196,15 +216,28 @@ def dispose_draft(
     model: str = Form(""),
     disposition: str = Form(...),
     final_text: str = Form(""),
+    proposal_sig: str = Form(""),
 ):
     """The ONLY write path on this surface. Reconstruct the proposal from the posted fields,
     record the human disposition with a SERVER-SIDE author (D-004), and show the outcome.
 
     Note: there is deliberately no ``author`` parameter here — even if the form posts one, we
-    ignore it. The author of record is always ``config.DEMO_WORKER`` (Invariant 5)."""
+    ignore it. The author of record is always ``config.DEMO_WORKER`` (Invariant 5).
+
+    A08: the provenance fields (``proposal_text``, ``model``, …) must carry the server's HMAC
+    signature from generation. A forged/tampered AI proposal or model attribution fails the
+    check and is rejected before it can enter the append-only log."""
     persona = data.get_persona(persona_id)
     if persona is None:
         return render(request, "drafting/not_found.html", persona_id=persona_id)
+
+    if not integrity.verify(
+        integrity.provenance(persona_id, surface, proposal_type, model, proposal_text), proposal_sig
+    ):
+        # Tampered or unsigned provenance — write nothing; the log stays trustworthy.
+        committed, sent = _ledger(persona_id)
+        return render(request, "drafting/tampered.html", persona=persona,
+                      committed=committed, sent=sent)
 
     proposal = Proposal(
         persona_id=persona_id,

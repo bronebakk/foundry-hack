@@ -21,9 +21,18 @@ from fastapi.responses import HTMLResponse
 
 from app import config
 from app.models import Proposal, Surface, ProposalType, Disposition
-from app.services import data, decision_log
+from app.services import data, decision_log, integrity, safety
 from app.services.inference import provider, InferenceError
 from app.templating import render
+
+# The server-built handoff note for the "no computer says no" path. Built (and signed) server-side
+# so its recorded proposal text can't be forged at /refer (A08).
+def _refer_context(persona) -> str:
+    return (
+        f"{persona.name} asked (own words) about an option that isn't open on its usual route. "
+        "Routing the decision to a keyworker to review the alternatives on file and come back "
+        "with a route and a reason."
+    )
 
 router = APIRouter(prefix="/escalation", tags=["escalation"])
 
@@ -62,13 +71,14 @@ def _build_escalation_draft(persona, record) -> EscalationDraft:
         "EDIT and own. The risk indicator already exists in the case record — do NOT decide, "
         "diagnose, or assert that a young person IS being harmed. Summarise the documented "
         "concern in plain, careful language, grounded ONLY in the provided record. Keep it to "
-        "a few sentences. The keyworker will edit this and is the author of record."
+        "a few sentences. The keyworker will edit this and is the author of record. "
+        + safety.FENCE_INSTRUCTION
     )
     prompt = (
         f"Young person: {persona.name} (synthetic, age {persona.age}).\n"
         f"Recorded concern category: {record.risk_category}.\n"
-        f"Rationale already on file: {record.risk_rationale}\n"
-        f"Source record ({record.source}, {record.date}): \"{record.text}\"\n\n"
+        f"Rationale already on file: {record.risk_rationale}\n\n"
+        f"Source record ({record.source}, {record.date}):\n{safety.fence(record.text)}\n\n"
         "Draft a short escalation note the keyworker can edit before sending to the "
         "safeguarding lead."
     )
@@ -143,7 +153,10 @@ def escalation_persona(request: Request, persona_id: str):
             proposal_text=draft.text,
             model=draft.model,
         )
-        risk_items.append({"record": record, "proposal": proposal})
+        sig = integrity.sign(integrity.provenance(
+            persona.id, Surface.ESCALATION.value, ProposalType.RISK_FLAG.value,
+            draft.model, draft.text))
+        risk_items.append({"record": record, "proposal": proposal, "sig": sig})
 
     # The "no computer says no" surface: an option the young person asked about (their own words
     # in a self-referral) that can't currently proceed on its usual route. We never refuse on the
@@ -156,6 +169,11 @@ def escalation_persona(request: Request, persona_id: str):
     support_types = {"admissions_note", "work_coach_note", "keyworker_note"}
     support_notes = [r for r in persona.records if r.type in support_types]
 
+    # The refer ("no computer says no") handoff note — built and signed server-side (A08).
+    refer_context = _refer_context(persona)
+    refer_sig = integrity.sign(integrity.provenance(
+        persona.id, Surface.ESCALATION.value, ProposalType.FOLLOW_UP.value, "", refer_context))
+
     return render(
         request,
         "escalation/persona.html",
@@ -164,6 +182,8 @@ def escalation_persona(request: Request, persona_id: str):
         ai_available=provider.configured,
         aspiration_record=aspiration_record,
         support_notes=support_notes,
+        refer_context=refer_context,
+        refer_sig=refer_sig,
     )
 
 
@@ -177,9 +197,22 @@ def escalate(
     proposal_text: str = Form(""),
     final_text: str = Form(""),
     model: str = Form(""),
+    proposal_sig: str = Form(""),
 ):
     """Record the worker's decision about a surfaced risk. This fires ONLY on a human click.
-    Author is set server-side (D-004) — never trusted from the form."""
+    Author is set server-side (D-004) — never trusted from the form. A08: the AI proposal text
+    and model must carry the server's signature from when they were surfaced, so neither can be
+    forged into the safeguarding log."""
+    if not integrity.verify(
+        integrity.provenance(persona_id, Surface.ESCALATION.value,
+                             ProposalType.RISK_FLAG.value, model, proposal_text),
+        proposal_sig,
+    ):
+        return render(request, "escalation/index.html",
+                      flagged=[p for p in data.list_personas() if p.has_risk_indicator],
+                      inbox_count=0,
+                      error="That escalation couldn't be verified — nothing was recorded.")
+
     proposal = Proposal(
         persona_id=persona_id,
         surface=Surface.ESCALATION,
@@ -220,10 +253,22 @@ def refer_to_human(
     persona_id: str,
     context_text: str = Form(""),
     final_text: str = Form(""),
+    proposal_sig: str = Form(""),
 ):
     """The 'no computer says no' path: where an option can't currently proceed, the worker
     routes the DECISION to a human rather than the machine issuing a refusal. Recorded as a
-    human-initiated escalation (a decision a human must make and deliver)."""
+    human-initiated escalation (a decision a human must make and deliver). A08: the routed
+    context is server-built and signed, so it can't be forged into the log."""
+    if not integrity.verify(
+        integrity.provenance(persona_id, Surface.ESCALATION.value,
+                             ProposalType.FOLLOW_UP.value, "", context_text),
+        proposal_sig,
+    ):
+        return render(request, "escalation/index.html",
+                      flagged=[p for p in data.list_personas() if p.has_risk_indicator],
+                      inbox_count=0,
+                      error="That referral couldn't be verified — nothing was recorded.")
+
     proposal = Proposal(
         persona_id=persona_id,
         surface=Surface.ESCALATION,

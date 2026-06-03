@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from app import config
 from app.auth import require_user
 from app.db import init_db
+from app.security import security_middleware
 from app.services import data
 from app.services.inference import provider
 from app.routers import context, drafting, escalation, governance
@@ -41,6 +42,9 @@ app = FastAPI(
     dependencies=[Depends(require_user)],
 )
 app.mount("/static", StaticFiles(directory=str(config.APP_DIR / "static")), name="static")
+
+# Security response headers on every response + cross-origin write (CSRF) protection (A01/A02).
+app.middleware("http")(security_middleware)
 
 # All stream routers registered here in M1 — pre-wired stubs for M3/M4/M5/M6.
 app.include_router(context.router)

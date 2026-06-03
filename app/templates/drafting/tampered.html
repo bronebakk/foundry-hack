@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Not recorded — Keyworker Workbench{% endblock %}
+{% block content %}
+{% include "_arc.html" %}
+<p class="eyebrow">Nothing recorded</p>
+<h1>That draft couldn't be verified</h1>
+<p class="lead">The AI proposal's provenance signature didn't match, so <strong>nothing was written to
+  the record of truth</strong>. This protects the decision log: only an AI proposal the server
+  actually generated can be committed, and its open-weight model attribution can't be altered.</p>
+<p class="muted">If you were mid-draft, the page may simply have been open a while — generate the draft
+  again and commit it fresh.</p>
+
+<hr />
+{% include "drafting/_ledger.html" %}
+
+<a class="back-link" href="/drafting/{{ persona.id }}">← Back to drafting for {{ persona.name.split()[0] }}</a>
+{% endblock %}
