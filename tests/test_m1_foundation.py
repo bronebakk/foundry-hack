@@ -35,7 +35,7 @@ def test_persona_records_visible_with_markers():
 
 def test_personas_loaded_and_one_has_risk_indicator():
     personas = data.list_personas()
-    assert len(personas) == 3
+    assert len(personas) == 6  # 3 original + 3 hero personas promoted from staged at M6 (D-005)
     assert any(p.has_risk_indicator for p in personas)
     assert all(p.synthetic for p in personas)
 

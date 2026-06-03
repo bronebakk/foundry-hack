@@ -1,0 +1,91 @@
+/* M6 GOV surface — the decision-log viewer. Namespaced .gov-* so it can't collide with the
+   stream stylesheets. Layers on Pico.css + base.css. */
+
+.gov-immutable {
+  background: #f6fcf8;
+  border: 1px solid #badbcc;
+  border-left: 4px solid #198754;
+  border-radius: 0.4rem;
+  padding: 0.7rem 1rem;
+  margin: 1rem 0;
+}
+
+.gov-inference {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 1rem;
+}
+.gov-inference summary { font-weight: 600; cursor: pointer; }
+.gov-inference ul { margin: 0.5rem 0 0.2rem; }
+
+.gov-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0;
+}
+.gov-filter a[role="button"] { padding: 0.15rem 0.6rem; font-size: 0.8rem; }
+
+.gov-log { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.gov-entry {
+  border: 1px solid #dee2e6;
+  border-left: 4px solid #6c757d;
+  border-radius: 0.5rem;
+  padding: 0.8rem 1.1rem;
+}
+/* Disposition-tinted left border so the log scans at a glance. */
+.gov-entry.gov-commit   { border-left-color: #198754; }
+.gov-entry.gov-send     { border-left-color: #0d6efd; }
+.gov-entry.gov-escalate { border-left-color: #dc3545; }
+.gov-entry.gov-discard  { border-left-color: #adb5bd; }
+
+.gov-entry-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.gov-id { font-weight: 700; color: #6c757d; font-size: 0.85rem; }
+.gov-when { margin-left: auto; color: #6c757d; }
+
+.gov-badge {
+  display: inline-block;
+  border-radius: 0.5rem;
+  padding: 0 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.gov-badge-commit   { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+.gov-badge-send     { background: #cfe2ff; color: #084298; border: 1px solid #b6d4fe; }
+.gov-badge-escalate { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+.gov-badge-discard  { background: #e9ecef; color: #495057; border: 1px solid #dee2e6; }
+
+.gov-meta { margin: 0.2rem 0 0.5rem; color: #6c757d; }
+
+.gov-proposal { margin: 0.3rem 0; }
+.gov-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+}
+.gov-model { color: #6c757d; margin-left: 0.4rem; }
+.gov-proposal blockquote {
+  margin: 0.25rem 0;
+  color: #495057;
+  border-left: 3px solid #ced4da;
+}
+
+.gov-disposition { margin-top: 0.5rem; }
+.gov-arrow { color: #198754; font-weight: 700; margin-right: 0.2rem; }
+.gov-final {
+  margin: 0.3rem 0 0;
+  border-left: 3px solid #198754;
+}
