@@ -75,6 +75,16 @@ Integrating the three streams surfaced one cross-stream regression that no singl
 
 **Non-blocking note (not fixed, by design):** the escalate handler echoes the `_proposal.html` hidden `model` field onto the `Proposal` as generation provenance — a client could write a false/closed model id into the *provenance* column (not authorship). Left consistent with the frozen shared `_proposal.html` contract used by all streams; the load-bearing guarantee (author of record = server-side `config.DEMO_WORKER`) is correctly enforced. Flag for M6 if cross-stream provenance hardening is wanted.
 
+### F-005 — M6 (Integration & governance polish) gate PASSED
+**Date**: 2026-06-03 · Fresh-context validator, adversarial pass, on the merged `m6-integration` branch (all three streams + the governance build). All three M6 assertions PASS by observed behaviour of the running app:
+- **VAL-GOV-001** — persistent synthetic banner on every surface × all 6 personas; every persona `synthetic: true`; adversarial grep for real-data patterns across `.py/.html/.json` → nothing.
+- **VAL-GOV-002** — only open-weight IDs in the path (`openai/gpt-oss-120b`, `meta-llama/llama-3.3-70b-instruct`); adversarial grep for `gpt-4`/`claude`/`gemini`/`davinci`/`anthropic` → **zero hits**; the single sovereign swap point (`OPENROUTER_BASE_URL` + key) is inspectable on both `/governance/` and `/healthz`.
+- **VAL-GOV-003** — the `/governance/` viewer shows AI proposal → human disposition → human author; propose-not-act confirmed by count *delta* (GET + `/generate` add 0; only a human `dispose` adds +1); author-spoof (`author=gpt-oss-120b`) defeated → recorded `Sam Ellison (keyworker)`; append-only enforced at DB (UPDATE/DELETE triggers) and service (no mutation API), and the viewer has **no edit/delete affordance** (governance mutations → 405/404). Log aggregates cross-surface (drafting + escalation entries both shown).
+
+**Cohesion**: the three-stakeholder arc runs clean end to end (context → draft → risk surfaces → human escalates → human-owned inbox → governance log), nav connects all surfaces, no 500s, nothing committed or denied by the machine. **66/66 tests pass.**
+
+Integration findings handled in-milestone (no deferrals): import-time `init_db()` regression (D-007); hero personas promoted live (D-005); the DENY block de-hardcoded to be data-driven per persona; `decisions.md` F-numbering reconciled. M3/M4/M5 stream surfaces spot-checked green post-merge.
+
 ---
 
 ## Known / deferred issues
