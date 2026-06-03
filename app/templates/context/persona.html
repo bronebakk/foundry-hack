@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}{{ persona.name }} — Context{% endblock %}
 {% block content %}
+{# Stream-owned styles. base.html has no head block, so we link from the body (valid HTML);
+   keeps M3 inside its owned files (app/static/context.css). #}
+<link rel="stylesheet" href="/static/context.css" />
+
 <hgroup>
   <h1>{{ persona.name }}, {{ persona.age }}
     {% if persona.synthetic %}<span class="tag-synthetic">synthetic</span>{% endif %}
@@ -12,17 +16,54 @@
 <blockquote><small>🧪 {{ persona.demo_note }}</small></blockquote>
 {% endif %}
 
-<!-- Where the AI-synthesised brief will render (M3 / VAL-CTX-001, -002). -->
-<article class="proposal">
-  <span class="proposal-label">Synthesised brief — coming in M3</span>
-  <p>The pre-meeting brief will be generated here from the source records below, with every
-     claim traceable back to its originating record. Until then, the raw records are shown
-     so the worker can cross-reference manually.</p>
+{# ---- The synthesised brief: a PROPOSAL, never settled fact (Invariant 1 / VAL-CTX-001) ---- #}
+<article class="proposal ctx-brief" data-uncommitted="true">
+  <span class="proposal-label">⬩ AI proposal — pre-meeting brief · synthesis, not a record of truth</span>
+  <p class="proposal-meta">
+    <small>
+      Synthesised from the {{ persona.records|length }} source record(s) below
+      {% if brief.model %} · drafted by open-weight model ({{ brief.model }}){% endif %}.
+      Check each line against its source before you rely on it.
+    </small>
+  </p>
+
+  {% if brief.status == "ok" %}
+  <ul class="ctx-brief-list">
+    {% for s in brief.statements %}
+    <li class="ctx-statement">
+      <span class="ctx-statement-text">{{ s.text }}</span>
+      <span class="ctx-sources">
+        {# VAL-CTX-002: every statement carries a link to its originating record. #}
+        <span class="ctx-says-who">says who?</span>
+        {% for src in s.sources %}
+        <a class="ctx-source-link" href="#{{ src.id }}"
+           title="{{ src.source }} · {{ src.date }} · {{ src.author }}">{{ src.source }}</a>
+        {% endfor %}
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+  <small class="proposal-foot">
+    Each line traces to a source record — click a “{{ "says who" }}” link to jump to it.
+    This brief is context for your judgement; nothing here is committed or sent.
+  </small>
+  {% else %}
+  <div class="ctx-notice" role="note">
+    <strong>
+      {% if brief.status == "not_configured" %}Brief not generated — inference not configured.
+      {% elif brief.status == "empty" %}No attributable brief to show.
+      {% else %}Brief not generated — inference unavailable.{% endif %}
+    </strong>
+    <p><small>{{ brief.message }}</small></p>
+    <p><small>The raw source records are shown below so you can review them directly — the
+      surface stays usable even with no model available.</small></p>
+  </div>
+  {% endif %}
 </article>
 
 <h2>Source records ({{ persona.records|length }})</h2>
 {% for r in persona.records %}
-<article id="{{ r.id }}">
+<article id="{{ r.id }}" class="ctx-record">
   <header>
     <strong>{{ r.source }}</strong> · <small>{{ r.date }} · {{ r.author }}</small>
     {% if r.risk_indicator %}<span class="tag-risk">safeguarding signal</span>{% endif %}
@@ -37,5 +78,5 @@
 </article>
 {% endfor %}
 
-<p><a href="/" role="button" class="secondary">← Back to caseload</a></p>
+<p><a href="/context/" role="button" class="secondary">← Back to context list</a></p>
 {% endblock %}
