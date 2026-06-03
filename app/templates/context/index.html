@@ -1,19 +1,25 @@
 {% extends "base.html" %}
 {% block title %}Context — Keyworker Workbench{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="/static/context.css" />
-<hgroup>
-  <h1>Pre-meeting context</h1>
-  <p>Choose a young person to build a synthesised brief from their records — every claim in
-    the brief traces back to the record it came from. <small>The brief is an AI
-    <strong>proposal</strong> for your judgement, not a record of truth.</small></p>
-</hgroup>
-<ul class="ctx-persona-list">
+<p class="eyebrow">Walk in prepared</p>
+<h1>Pre-meeting context</h1>
+<p class="lead">Choose a young person to build a synthesised brief from their records — every claim
+  traces back to the record it came from. The brief is an AI <strong>proposal</strong> for your
+  judgement, not a record of truth.</p>
+
+<div class="grid cols-3" style="margin-top:1.6rem;">
   {% for p in personas %}
-  <li>
-    <a href="/context/{{ p.id }}">{{ p.name }}</a>, {{ p.age }} — {{ p.summary_line }}
-    <br /><small>{{ p.record_count }} record(s){% if p.synthetic %} · <span class="tag-synthetic">synthetic</span>{% endif %}</small>
-  </li>
+  <a class="card card-hover card-link" href="/context/{{ p.id }}">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:.5rem;">
+      <h3 style="margin:0;">{{ p.name }}</h3>
+      <span class="muted" style="font-size:.9rem; font-variant-numeric:tabular-nums;">{{ p.age }}</span>
+    </div>
+    {% if p.synthetic %}<span class="tag tag-synthetic" style="align-self:flex-start; margin-top:.5rem;">synthetic</span>{% endif %}
+    <p style="margin:.9rem 0 0; font-size:.93rem;">{{ p.summary_line }}</p>
+    <div style="margin-top:auto; padding-top:1rem;">
+      <span class="subtle" style="font-size:.82rem;">{{ p.record_count }} source records</span>
+    </div>
+  </a>
   {% endfor %}
-</ul>
+</div>
 {% endblock %}

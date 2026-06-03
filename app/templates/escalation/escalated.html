@@ -1,41 +1,36 @@
 {% extends "base.html" %}
 {% block title %}Sent — Safeguarding — Keyworker Workbench{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="/static/escalation.css" />
-
 {% if outcome == "reviewed_no_escalation" %}
-<hgroup>
+  <p class="eyebrow">Your decision</p>
   <h1>Review recorded</h1>
-  <p>You reviewed the signal and chose not to escalate it now. That decision is logged for the
-  record. Nothing was sent and no referral was made.</p>
-</hgroup>
+  <p class="lead">You reviewed the signal and chose not to escalate it now. That decision is logged for
+    the record. Nothing was sent and no referral was made.</p>
 {% elif outcome == "referred" %}
-<hgroup>
+  <p class="eyebrow">Routed to a human</p>
   <h1>Sent to a keyworker</h1>
-  <p>The decision has been handed to a person to make and deliver — with a reason and an
-  alternative. The system did not refuse anything.</p>
-</hgroup>
+  <p class="lead">The decision has been handed to a person to make and deliver — with a reason and an
+    alternative. The system did not refuse anything.</p>
 {% else %}
-<hgroup>
+  <p class="eyebrow">Human-owned from here</p>
   <h1>Escalated to the safeguarding lead</h1>
-  <p>Because <strong>you</strong> chose to escalate, this concern is now in the human-owned
-  safeguarding inbox. The system did not raise it automatically, and it will not resolve it —
-  a designated human owns it from here.</p>
-</hgroup>
+  <p class="lead">Because <strong>you</strong> chose to escalate, this concern is now in the human-owned
+    safeguarding inbox. The system did not raise it automatically, and it will not resolve it —
+    a designated human owns it from here.</p>
 {% endif %}
 
-<article class="esc-receipt">
-  <p class="proposal-meta"><small>
-    Decision-log entry <code>#{{ entry.id }}</code> · {{ entry.created_at }} ·
-    <strong>author of record: {{ entry.author }}</strong>
-    {% if persona %} · re: {{ persona.name }}{% endif %}
-  </small></p>
-  {% if entry.final_text %}<blockquote>{{ entry.final_text }}</blockquote>{% endif %}
-  <p><small>This entry is append-only and cannot be silently altered.</small></p>
-</article>
+<div class="callout" style="background:var(--commit-bg); color:var(--commit-text); border-color:var(--commit-border); border-left-color:var(--commit-line);">
+  <span class="ic" aria-hidden="true">{{ "✓" if outcome != "reviewed_no_escalation" else "•" }}</span>
+  <div>
+    <p class="mb0" style="font-size:.84rem;">Decision-log entry <code>#{{ entry.id }}</code> · {{ entry.created_at }} ·
+      <strong>author of record: {{ entry.author }}</strong>{% if persona %} · re: {{ persona.name }}{% endif %}</p>
+    {% if entry.final_text %}<blockquote style="margin:.5rem 0 0; border-left:3px solid var(--commit-line); padding-left:.9rem; white-space:pre-wrap;">{{ entry.final_text }}</blockquote>{% endif %}
+    <p class="mb0" style="margin-top:.5rem; font-size:.82rem;">This entry is append-only and cannot be silently altered.</p>
+  </div>
+</div>
 
-<p>
-  <a href="/escalation/inbox" role="button" class="contrast">Open the safeguarding inbox →</a>
-  <a href="/escalation/" role="button" class="secondary">Back to safeguarding</a>
+<p style="margin-top:1.4rem;">
+  <a href="/escalation/inbox" class="btn btn-contrast">Open the safeguarding inbox →</a>
+  <a href="/escalation/" class="btn btn-ghost">Back to safeguarding</a>
 </p>
 {% endblock %}

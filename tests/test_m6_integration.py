@@ -87,7 +87,7 @@ def test_governance_shows_all_disposition_kinds(client):
     _seed_one(Disposition.ESCALATE, ptype=ProposalType.RISK_FLAG, persona="leah-sumner")
     _seed_one(Disposition.DISCARD, final=None)
     body = client.get("/governance/").text
-    for badge in ("gov-badge-commit", "gov-badge-send", "gov-badge-escalate", "gov-badge-discard"):
+    for badge in ("badge-commit", "badge-send", "badge-escalate", "badge-discard"):
         assert badge in body
 
 

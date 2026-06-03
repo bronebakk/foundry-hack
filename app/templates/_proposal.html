@@ -1,49 +1,55 @@
 {#
-  Shared proposal partial — FROZEN after M2. Reused by every stream (M3/M4/M5) so that
-  EVERY AI output is framed identically: an uncommitted draft the worker edits and
-  disposes of. Nothing here saves or sends on its own (Invariant 1 / VAL-PROPOSE-003).
+  Shared proposal frame — the hero of the product (Invariant 1). Every AI output is framed
+  identically: an uncommitted, editable draft the worker edits and disposes of. Nothing here
+  saves or sends on its own (VAL-PROPOSE-003). Refined per the design handoff.
 
   Expected context:
     proposal      : app.models.Proposal
     action_url    : str   — the stream endpoint that records the human disposition
-    actions       : list of {value, label, class?}  — the human choices (e.g. Commit / Discard)
+    actions       : list of {value, label, class?}  — the human choices (Commit / Discard / …)
     editable      : bool  (default true) — whether the worker can edit before disposing
     proposal_type_label : str (optional human label, e.g. "Case note")
+    foot          : str   (optional reassurance line; a sensible default is used otherwise)
+
+  Button gravity is keyed to the disposition's meaning, not the caller's class string:
+  Commit = ink (heavy); Escalate/Send = contrast (heaviest); Discard/Not-now = ghost (quiet).
 #}
-<article class="proposal" data-uncommitted="true">
-  <span class="proposal-label">⬩ AI proposal — DRAFT · not committed, nothing sent</span>
-  <p class="proposal-meta">
-    <small>
-      {{ proposal_type_label or proposal.proposal_type.value }} ·
-      drafted by open-weight model{% if proposal.model %} ({{ proposal.model }}){% endif %} ·
-      <strong>you are the author of record</strong>
-    </small>
-  </p>
+{% set btn_classes = {"commit": "btn-ink btn-lg", "send": "btn-contrast btn-lg",
+                      "escalate": "btn-contrast btn-lg", "discard": "btn-ghost", "review": "btn-ghost"} %}
+<article class="proposal" data-uncommitted="true" aria-label="AI proposal — uncommitted draft">
+  <div class="proposal-head">
+    <span class="proposal-pill">⬩ Draft</span>
+    <span class="meta">{{ proposal_type_label or proposal.proposal_type.value }} · not committed, nothing sent</span>
+  </div>
+  <div class="proposal-body">
+    <p class="proposal-meta">Drafted by open-weight model{% if proposal.model %} (<code>{{ proposal.model }}</code>){% endif %} ·
+      <strong>you are the author of record</strong>.</p>
 
-  <form method="post" action="{{ action_url }}">
-    <input type="hidden" name="persona_id" value="{{ proposal.persona_id }}" />
-    <input type="hidden" name="surface" value="{{ proposal.surface.value }}" />
-    <input type="hidden" name="proposal_type" value="{{ proposal.proposal_type.value }}" />
-    <input type="hidden" name="proposal_text" value="{{ proposal.proposal_text }}" />
-    <input type="hidden" name="model" value="{{ proposal.model or '' }}" />
+    <form method="post" action="{{ action_url }}">
+      <input type="hidden" name="persona_id" value="{{ proposal.persona_id }}" />
+      <input type="hidden" name="surface" value="{{ proposal.surface.value }}" />
+      <input type="hidden" name="proposal_type" value="{{ proposal.proposal_type.value }}" />
+      <input type="hidden" name="proposal_text" value="{{ proposal.proposal_text }}" />
+      <input type="hidden" name="model" value="{{ proposal.model or '' }}" />
 
-    {% if editable is not defined or editable %}
-    <label>
-      Your version (edit freely — your words are what gets committed)
-      <textarea name="final_text" rows="8">{{ proposal.proposal_text }}</textarea>
-    </label>
-    {% else %}
-    <blockquote>{{ proposal.proposal_text }}</blockquote>
-    <input type="hidden" name="final_text" value="{{ proposal.proposal_text }}" />
-    {% endif %}
+      {% if editable is not defined or editable %}
+      <label>Your version <span class="hint">— edit freely; your words are what gets committed</span>
+        <textarea name="final_text" rows="8">{{ proposal.proposal_text }}</textarea>
+      </label>
+      {% else %}
+      <blockquote>{{ proposal.proposal_text }}</blockquote>
+      <input type="hidden" name="final_text" value="{{ proposal.proposal_text }}" />
+      {% endif %}
 
-    <div class="proposal-actions" role="group">
-      {% for a in actions %}
-      <button type="submit" name="disposition" value="{{ a.value }}"
-              class="{{ a.class or 'secondary' }}">{{ a.label }}</button>
-      {% endfor %}
-    </div>
-  </form>
+      <div class="proposal-actions" role="group">
+        {% for a in actions %}
+        <button type="submit" name="disposition" value="{{ a.value }}"
+                class="btn {{ btn_classes.get(a.value, 'btn-ink') }}">{{ a.label }}</button>
+        {% endfor %}
+      </div>
+    </form>
 
-  <small class="proposal-foot">The AI drafts; you decide. No record is saved and no message is sent until you choose an action above.</small>
+    <p class="proposal-foot mb0"><span class="lock" aria-hidden="true">⬩</span>
+      {{ foot or "The AI drafts; you decide. Nothing is saved and nothing is sent until you choose an action above." }}</p>
+  </div>
 </article>

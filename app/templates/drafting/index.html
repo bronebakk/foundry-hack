@@ -1,25 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Drafting — Keyworker Workbench{% endblock %}
 {% block content %}
-<hgroup>
-  <h1>Drafting</h1>
-  <p>Case notes and follow-up messages in your own voice. Every output is an editable draft
-     <strong>you</strong> author and commit — nothing is saved or sent automatically.</p>
-</hgroup>
+<p class="eyebrow">The propose → dispose moment</p>
+<h1>Drafting</h1>
+<p class="lead">Case notes and follow-up messages in your own voice. Every output is an editable draft
+   <strong>you</strong> author and commit — nothing is saved or sent automatically.</p>
 
-<p>Pick a young person to draft for:</p>
-<div class="grid">
+<div class="grid cols-3" style="margin-top:1.6rem;">
   {% for p in personas %}
-  <article>
-    <header>
-      <strong>{{ p.name }}</strong> <span class="tag-synthetic">synthetic</span>
-      {% if p.has_risk_indicator %}<span class="tag-risk">safeguarding signal</span>{% endif %}
-    </header>
-    <p><small>{{ p.summary_line }}</small></p>
-    <a href="/drafting/{{ p.id }}" role="button">Draft for {{ p.name.split()[0] }} →</a>
-  </article>
+  <a class="card card-hover card-link" href="/drafting/{{ p.id }}">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:.5rem;">
+      <h3 style="margin:0;">{{ p.name }}</h3>
+      <span class="muted" style="font-size:.9rem; font-variant-numeric:tabular-nums;">{{ p.age }}</span>
+    </div>
+    <div style="margin-top:.5rem; display:flex; gap:.35rem; flex-wrap:wrap;">
+      {% if p.synthetic %}<span class="tag tag-synthetic">synthetic</span>{% endif %}
+      {% if p.has_risk_indicator %}<span class="tag tag-risk tag-dot">safeguarding signal</span>{% endif %}
+    </div>
+    <p style="margin:.9rem 0 0; font-size:.93rem;">{{ p.summary_line }}</p>
+    <div style="margin-top:auto; padding-top:1rem;">
+      <span class="subtle" style="font-size:.82rem;">Draft for {{ p.name.split()[0] }} →</span>
+    </div>
+  </a>
   {% endfor %}
 </div>
 
-<p><a href="/" role="button" class="secondary">← Back to caseload</a></p>
+<a class="back-link" href="/">← Back to caseload</a>
 {% endblock %}

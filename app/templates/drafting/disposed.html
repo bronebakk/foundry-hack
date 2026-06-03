@@ -1,43 +1,38 @@
 {% extends "base.html" %}
 {% block title %}{{ entry.disposition|capitalize }} · {{ persona.name }} — Keyworker Workbench{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="/static/drafting.css" />
+{% include "_arc.html" %}
 
 {% if entry.disposition == "commit" %}
-  <hgroup>
-    <h1>Note committed ✓</h1>
-    <p>Committed by <strong>{{ entry.author }}</strong> — this is your note, in your words.
-       The AI was the drafting assistant, never the author of record.</p>
-  </hgroup>
-  <article class="committed-record">
-    <small class="ledger-attrib">✓ Committed by {{ entry.author }} · {{ entry.created_at }}</small>
+  <p class="eyebrow">Committed by you</p>
+  <h1>Note committed ✓</h1>
+  <p class="lead">Committed by <strong>{{ entry.author }}</strong> — this is your note, in your words.
+     The AI was the drafting assistant, never the author of record.</p>
+  <div class="committed-record">
+    <span class="attrib">✓ Committed by {{ entry.author }} · {{ entry.created_at }}</span>
     <p>{{ entry.final_text }}</p>
-  </article>
+  </div>
 {% elif entry.disposition == "send" %}
-  <hgroup>
-    <h1>Message sent ➤</h1>
-    <p>Sent by <strong>{{ entry.author }}</strong> on your explicit action. Nothing went out
-       until you pressed send.</p>
-  </hgroup>
-  <article class="committed-record">
-    <small class="ledger-attrib">➤ Sent by {{ entry.author }} · {{ entry.created_at }}</small>
+  <p class="eyebrow">Sent by you</p>
+  <h1>Message sent ➤</h1>
+  <p class="lead">Sent by <strong>{{ entry.author }}</strong> on your explicit action. Nothing went out
+     until you pressed send.</p>
+  <div class="committed-record">
+    <span class="attrib">➤ Sent by {{ entry.author }} · {{ entry.created_at }}</span>
     <p>{{ entry.final_text }}</p>
-  </article>
+  </div>
 {% else %}
-  <hgroup>
-    <h1>Draft discarded</h1>
-    <p>Nothing was kept. The discard is logged for the audit trail, but no note or message
-       entered the record of truth.</p>
-  </hgroup>
+  <p class="eyebrow">Your decision</p>
+  <h1>Draft discarded</h1>
+  <p class="lead">Nothing was kept. The discard is logged for the audit trail, but no note or message
+     entered the record of truth.</p>
 {% endif %}
 
-<p><small>The original AI proposal and this disposition are preserved together in the
-   immutable <a href="/governance/">decision log</a>.</small></p>
+<p class="muted" style="font-size:.9rem;">The original AI proposal and this disposition are preserved
+  together in the immutable <a href="/governance/">decision log</a>.</p>
 
 <hr />
 {% include "drafting/_ledger.html" %}
 
-<p>
-  <a href="/drafting/{{ persona.id }}" role="button">← Back to drafting for {{ persona.name.split()[0] }}</a>
-</p>
+<a class="back-link" href="/drafting/{{ persona.id }}">← Back to drafting for {{ persona.name.split()[0] }}</a>
 {% endblock %}
