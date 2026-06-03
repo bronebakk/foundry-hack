@@ -31,10 +31,13 @@ The briefing makes the **immutable decision log** the central procurement-cleari
 
 ## Discovered facts
 
-*(none yet)*
+### F-001 — M1 (Foundation) gate PASSED
+**Date**: 2026-06-03 · Fresh-context validator, no blocking issues. All 6 M1 deliverables + 3 GOV groundwork checks PASS. The two load-bearing guarantees were verified by live execution, not just code reading: (1) `decision_log` UPDATE/DELETE actually aborted by DB triggers; (2) `InferenceProvider` actually refused `openai/gpt-4o` before any network call. 7/7 tests pass. Env: Python 3.13.7, deps in `.venv`.
 
 ---
 
 ## Known / deferred issues
 
-*(none yet)*
+### KI-001 — Live inference path (VAL-GOV-002 network leg) unverified until a key is set
+**Date**: 2026-06-03 · **Severity**: low (expected) · **Status**: open
+`OPENROUTER_API_KEY` is not set in the dev environment, so no real open-weight model call has been made end-to-end. The *guards* (open-weight allowlist + closed-model refusal) are verified by execution; only the live round-trip is deferred. **Resolve by**: setting the key and running `python -m scripts.smoke_inference` (expect "INFERENCE OK"). Must be green before the M6/M7 governance validation and the demo.
